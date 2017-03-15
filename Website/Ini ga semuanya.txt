@@ -1,0 +1,4 @@
+source code di website ga semuanya disini.
+ini cuma source code yang mendukung index.php aja.
+mending klik kanan di website terus view source kalo mau liat lebih enak.
+mohon pergunakan dengan bijak.
