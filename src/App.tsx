@@ -41,7 +41,14 @@ export default function Portfolio() {
           <div className="space-y-4">
             <div className="flex justify-between items-start">
                <div className={`h-20 w-20 rounded-full ${THEME.accent} flex items-center justify-center text-white shadow-lg text-2xl font-bold`}>
-                 IS
+                 <motion.img
+                   src={DATA.profile.avatar}
+                   alt={DATA.profile.name}
+                   className="h-full w-full object-cover rounded-full"
+                   initial={{ scale: 0.8, opacity: 0 }}
+                   animate={{ scale: 1, opacity: 1 }}
+                   transition={{ duration: 0.5 }}
+                 />
                </div>
                <div className="flex gap-2 items-center px-3 py-1 bg-white/60 rounded-full border border-[#E8DCCA]">
                  <MapPin size={14} className="text-[#8A9A5B]" />
@@ -75,12 +82,12 @@ export default function Portfolio() {
 
         {/* 2. Projects List */}
         <Card className="md:col-span-2 md:row-span-2 overflow-hidden group" onClick={() => setSelectedSection('projects')}>
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-1">
             <SectionIcon icon={Code} />
             <span className="text-xs uppercase tracking-widest text-[#8A9A5B] font-bold">View All</span>
           </div>
-          <h3 className={`text-2xl font-bold ${THEME.text} mb-6`}>Selected Projects</h3>
-          <div className="space-y-3 overflow-y-auto max-h-[200px] pr-2 custom-scrollbar">
+          <h3 className={`text-2xl font-bold ${THEME.text} mb-3`}>Selected Projects</h3>
+          <div className="space-y-3 overflow-y-auto max-h-[250px] pr-2 custom-scrollbar">
             {DATA.projects.map((project) => (
               <div 
                 key={project.id}
@@ -200,7 +207,7 @@ export default function Portfolio() {
                     <div 
                       key={p.id} 
                       onClick={(e) => { e.stopPropagation(); setSelectedProject(p); }}
-                      className="p-4 border border-[#E8DCCA] rounded-xl hover:bg-[#FFF8F0] cursor-pointer transition-colors flex gap-4 items-center"
+                      className="p-4 border border-[#E8DCCA] rounded-xl hover:shadow-md hover:bg-[#FFF8F0] cursor-pointer transition-colors flex gap-4 items-center"
                     >
                       <img src={p.images[0]} alt={p.title} className="w-16 h-16 rounded-lg object-cover bg-gray-200" />
                       <div className="flex-1">
@@ -221,10 +228,11 @@ export default function Portfolio() {
                 {DATA.experience.map(exp => (
                   <div key={exp.id} className="pb-4 border-b border-[#E8DCCA] last:border-0 mb-4 last:mb-0">
                     <h4 className="font-bold text-lg text-[#4B3832]">{exp.role}</h4>
-                    <div className="flex flex-col sm:flex-row sm:justify-between text-sm text-[#8A9A5B] mb-2 font-medium">
+                    <div className="flex flex-col sm:flex-row sm:justify-between text-sm text-[#8A9A5B] mb-1 font-medium">
                       <span>{exp.company}</span>
                       <span>{exp.date}</span>
                     </div>
+                    <p className="text-xs text-[#888] mb-1">{exp.location}</p>
                     <p className="text-[#6F4E37] text-sm leading-relaxed">{exp.desc}</p>
                   </div>
                 ))}
