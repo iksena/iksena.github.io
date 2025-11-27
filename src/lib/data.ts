@@ -63,8 +63,18 @@ export const DATA = {
       id: 'p1', 
       title: "Jenius", 
       role: "Software Engineer & Technical Lead",
-      stack: ["Node.js", "React Native", "Microservices", "Kafka", "MongoDB", "Agile", "Docker", "Kubernetes"], 
-      desc: "Developed and optimised investment and insurance microservices for the Jenius banking app.", 
+      stack: ["Node.js", "React Native", "Microservices", "Kafka", "MongoDB", "Agile Scrum", "Docker", "Kubernetes"], 
+      desc: `As Technical Lead, I steered a cross-functional division of 18 software engineers to deliver critical Wealth Management solutions for the Jenius app, serving over 5 million users. 
+      I spearheaded the end-to-end system design and launch of the Mutual Funds and Insurance platforms, a strategic initiative that successfully acquired 20,000 registered investors and generated IDR 3 billion in transaction volume within its first month. 
+      To support these operations, I also architected and built "J2Admin," a mission-critical back-office application using the MERN stack (MongoDB, Express, React, Node.js) that streamlined Know-Your-Customer (KYC) processes for Priority Banking and centralized push notification management.
+      \n\n
+      On the architectural front, I collaborated closely with R&D and international partners to modernize the banking infrastructure. 
+      This involved leading the migration of legacy investment core services to meet global quality standards and implementing a highly scalable, distributed system utilizing GraphQL and microservices. 
+      My role required navigating complex integrations with third-party banking cores while ensuring high availability and data consistency across the distributed network.
+      \n\n
+      Prior to assuming leadership, I established the platform’s engineering foundation as a Full-stack Engineer. 
+      I introduced the Atomic Design principle to the Jenius revamp project, significantly enhancing UI reusability and maintainability, and published organization-wide front-end coding conventions to standardize development practices. 
+      I also played a hands-on role in fortifying application security against vulnerabilities and developing core features using a robust stack of React, Redis, Elasticsearch, and Apache Kafka.`, 
       learnMoreLink: "https://www.jenius.com",
       demoLink: "https://jenius.onelink.me/iXQC/JeniusAppPage",
       images: [
@@ -82,8 +92,10 @@ export const DATA = {
       id: 'p2', 
       title: "D-Bank PRO", 
       role: "Software Engineer",
-      stack: ["Node.js", "Angular", "React", "Cordova", "PostgreSQL", "Java Spring", "Docker"], 
-      desc: "Built cashless withdrawal and gold investment features for Danamon's D-Bank PRO app, enhancing user engagement.", 
+      stack: ["Typescript", "Angular", "React", "Node.js", "Cordova", "PostgreSQL", "Java Spring", "Docker", "Kotlin", "Swift"], 
+      desc: `Spearheaded the end-to-end modernization of the D-Bank PRO digital banking platform by initiating a strategic migration from a legacy Cordova codebase to native Android (Kotlin) and iOS (Swift) while onboarding and leading a cross-functional team of 30 developers. 
+        Simultaneously architected a new React and Node.js-based back-office automation platform that reduced manual workloads by 25% and optimized content delivery frequency by fourfold. 
+        Beyond infrastructure, I engineered high-impact features, including Gold Investment, Cashless Withdrawal, and NFC E-money top-ups, that drove a 30% YoY increase in the user base to 400k+ active users, all while establishing strict engineering standards that achieved 90% unit test coverage.`, 
       learnMoreLink: "https://www.danamon.co.id/en/e-banking/personal/d-bank-pro",
       demoLink: "https://play.google.com/store/apps/details?id=com.dbank.mobile&hl=en",
       images: [
@@ -103,7 +115,12 @@ export const DATA = {
       learnMoreLink: "https://naturehelm.com",
       demoLink: "https://linktr.ee/naturehelmsena?utm_source=sena.web.id",
       images: [
-        "https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=1000&auto=format&fit=crop",
+        IMAGES.NATUREHELM.NATUREHELM,
+        IMAGES.NATUREHELM.NATUREHELM_ANALYTICS,
+        IMAGES.NATUREHELM.NATUREHELM_VOLUNTEER,
+        IMAGES.NATUREHELM.NATUREHELM_KML,
+        IMAGES.NATUREHELM.NATUREHELM_CIRCLE,
+        IMAGES.NATUREHELM.NATUREHELM_ORG,
       ]
     },
     { 
@@ -115,18 +132,24 @@ export const DATA = {
       learnMoreLink: "https://comofootball.com/en/",
       demoLink: "https://shop.comofootball.com/",
       images: [
-        "https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=1000&auto=format&fit=crop",
+        IMAGES.COMO.COMO,
+        IMAGES.COMO.COMO_SHOPIFY,
+        IMAGES.COMO.COMO_CART,
+        IMAGES.COMO.COMO_RANKING,
+        IMAGES.COMO.COMO_SUMMER,
       ]
     },
     { 
       id: 'p5', 
-      title: "FitHappy iOS App", 
+      title: "FitHappy", 
       role: "Senior Frontend Engineer",
       stack: ["React Native", "iOS", "Redux"], 
       desc: "Released the first iOS wellness app helping 500+ users start their health journey.",
       learnMoreLink: "https://east.vc/portfolio/fithappy",
       images: [
-        "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1000&auto=format&fit=crop"
+        IMAGES.FITHAPPY.FITHAPPY,
+        IMAGES.FITHAPPY.FITHAPPY_MARKETING,
+        IMAGES.FITHAPPY.FITHAPPY_PARTNERSHIP,
       ]
     },
     { 

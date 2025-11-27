@@ -14,6 +14,20 @@ import DBANKPRO_HOME from './images/dbankpro/home.jpg';
 import DBANKPRO_LOGIN from './images/dbankpro/login.jpg';
 import DBANKPRO_MOBILE_HOME from './images/dbankpro/mobile-home.jpg';
 import DBANKPRO_STRAPI from './images/dbankpro/strapi.jpg';
+import NATUREHELM from './images/naturehelm/naturehelm.jpg';
+import NATUREHELM_ANALYTICS from './images/naturehelm/analytics.png';
+import NATUREHELM_VOLUNTEER from './images/naturehelm/volunteer.jpg';
+import NATUREHELM_KML from './images/naturehelm/kml.png';
+import NATUREHELM_CIRCLE from './images/naturehelm/circle.png';
+import NATUREHELM_ORG from './images/naturehelm/org.png';
+import COMO from './images/como/comoweb.png';
+import COMO_SHOPIFY from './images/como/shopify.png';
+import COMO_CART from './images/como/cart.png';
+import COMO_RANKING from './images/como/ranking.png';
+import COMO_SUMMER from './images/como/summercamp.png';
+import FITHAPPY from './images/fithappy/ios.jpg';
+import FITHAPPY_MARKETING from './images/fithappy/marketing.jpg';
+import FITHAPPY_PARTNERSHIP from './images/fithappy/partnership.jpg';
 
 export const IMAGES = {
   DP,
@@ -37,5 +51,25 @@ export const IMAGES = {
     DBANKPRO_LOGIN,
     DBANKPRO_MOBILE_HOME,
     DBANKPRO_STRAPI,
+  },
+  NATUREHELM: {
+    NATUREHELM,
+    NATUREHELM_ANALYTICS,
+    NATUREHELM_VOLUNTEER,
+    NATUREHELM_KML,
+    NATUREHELM_CIRCLE,
+    NATUREHELM_ORG,
+  },
+  COMO: {
+    COMO,
+    COMO_SHOPIFY,
+    COMO_CART,
+    COMO_RANKING,
+    COMO_SUMMER,
+  },
+  FITHAPPY: {
+    FITHAPPY,
+    FITHAPPY_MARKETING,
+    FITHAPPY_PARTNERSHIP,
   },
 };
