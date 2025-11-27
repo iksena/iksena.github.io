@@ -1,266 +1,23 @@
-import React, { useState, useEffect, useId } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  GraduationCap, Briefcase, Code, Award, FileCheck, 
-  X, ExternalLink, Github, MapPin, Cpu, ChevronLeft, ChevronRight,
-  Linkedin, Mail, Terminal, Layout, Server, Database, Cloud
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Award,
+  Briefcase,
+  ChevronRight,
+  Code,
+  Cpu,
+  ExternalLink,
+  FileCheck,
+  GraduationCap,
+  MapPin,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Card } from './components/Card.tsx';
+import { GenericModal } from './components/GenericModal.tsx';
+import { ProjectDetail } from './components/ProjectDetail.tsx';
+import { SectionIcon } from './components/SectionIcon.tsx';
+import { DATA } from './lib/data.ts';
+import { THEME } from './lib/theme.ts';
 
-// --- Theme & Data ---
-const THEME = {
-  bg: "bg-[#F5F5DC]", // Beige
-  text: "text-[#4B3832]", // Coffee Brown
-  card: "bg-[#FFF8F0]", // Warm White
-  accent: "bg-[#8A9A5B]", // Sage Green
-  border: "border-[#D2B48C]", // Tan
-};
-
-const DATA = {
-  profile: {
-    name: "I Komang Sena Aji Buwana",
-    roles: ["Software Engineer", "Full-Stack Developer", "Master of Computing Student"],
-    objective: "Experienced software engineer with 5+ years in full-stack fintech application development. Specializing in scalable systems, Agile leadership, and currently pursuing advanced studies in AI/ML and cloud-native architecture.",
-    location: "Canberra / Jakarta",
-    email: "i.buwana@anu.edu.au"
-  },
-  socials: [
-    { id: 'li', platform: "LinkedIn", link: "https://linkedin.com/in/iksena", icon: Linkedin },
-    { id: 'em', platform: "Email", link: "mailto:i.buwana@anu.edu.au", icon: Mail },
-  ],
-  experience: [
-    { 
-      id: 1, 
-      role: "Software Engineer Intern", 
-      company: "Wildlife Drones Pty. Ltd.", 
-      date: "July 2025 – Present", 
-      location: "Canberra, Australia",
-      desc: "Developing the NatureHelm platform for biodiversity monitoring as part of the ANU internship program." 
-    },
-    { 
-      id: 2, 
-      role: "Software Engineer", 
-      company: "PT Bank Danamon Indonesia Tbk.", 
-      date: "June 2023 – June 2024", 
-      location: "Jakarta, Indonesia",
-      desc: "Delivered D-Bank PRO features (cashless withdrawal, gold investment) driving 30% user growth. Built back-office automation reducing manual workloads by 25%." 
-    },
-    { 
-      id: 3, 
-      role: "Technical Lead & Full-stack Engineer", 
-      company: "PT Bank SMBC Indonesia Tbk.", 
-      date: "Oct 2019 – June 2023", 
-      location: "Jakarta, Indonesia",
-      desc: "Led a 15-member team for Jenius App wealth management features (5M+ users). Designed architecture for mutual funds and insurance integration." 
-    },
-  ],
-  education: [
-    { 
-      id: 1, 
-      degree: "Master of Computing", 
-      school: "Australian National University", 
-      date: "Feb 2025 – Present",
-      details: "GPA: 6.50/7.00. Coursework: Structured Programming, Relational Databases, Logic, Discrete Mathematics." 
-    },
-    { 
-      id: 2, 
-      degree: "Bachelor of Science in Engineering", 
-      school: "Institut Teknologi Bandung", 
-      date: "Aug 2015 – Sept 2019",
-      details: "GPA: 3.43/4.00. Teaching Assistant for Intro to IT. Coursework: Numerical Methods, Data Acquisition." 
-    }
-  ],
-  projects: [
-    { 
-      id: 'p1', 
-      title: "Jenius Investment Features", 
-      role: "Freelance Full-stack Engineer",
-      stack: ["Node.js", "React Native", "Microservices"], 
-      desc: "Developed and optimised investment and insurance microservices for the Jenius banking app.", 
-      images: [
-        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop", // Finance placeholder
-        "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=1000&auto=format&fit=crop"
-      ]
-    },
-    { 
-      id: 'p2', 
-      title: "Como 1907 E-commerce", 
-      role: "Freelance Full-stack Engineer",
-      stack: ["Shopify", "PHP", "Liquid"], 
-      desc: "Developed Shopify e-commerce platform and landing page for Como 1907 Italian football club.",
-      images: [
-        "https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=1000&auto=format&fit=crop", // Football/Store placeholder
-      ]
-    },
-    { 
-      id: 'p3', 
-      title: "FitHappy iOS App", 
-      role: "Senior Frontend Engineer",
-      stack: ["React Native", "iOS", "Redux"], 
-      desc: "Released the first iOS wellness app helping 500+ users start their health journey.",
-      images: [
-        "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1000&auto=format&fit=crop" // Fitness placeholder
-      ]
-    },
-    { 
-      id: 'p4', 
-      title: "EduLens Ed-Tech", 
-      role: "Co-founder",
-      stack: ["Startup", "Product Management"], 
-      desc: "Founded an ed-tech startup for university admission assistance. Funded by ITB startup bootcamp.",
-      images: [
-        "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1000&auto=format&fit=crop" // Education placeholder
-      ]
-    }
-  ],
-  skills: {
-    categories: [
-      { name: "Languages", items: ["Indonesian (Native)", "English (Advanced C1)"], icon: Terminal },
-      { name: "Frontend & Mobile", items: ["React.js", "Next.js", "React Native", "Flutter", "Angular", "Tailwind CSS", "HTML5"], icon: Layout },
-      { name: "Backend", items: ["Node.js", "Express.js", "Java", "PHP", "Python", "C++", "GraphQL", "Kafka"], icon: Server },
-      { name: "Database", items: ["PostgreSQL", "MongoDB", "Redis"], icon: Database },
-      { name: "DevOps & Cloud", items: ["Docker", "Kubernetes", "Red Hat OpenShift", "Jenkins", "Git"], icon: Cloud },
-    ]
-  },
-  awards: [
-    "LPDP Scholarship (2024) - Full scholarship for ANU Master's",
-    "Ganesha Karsa Award (2019) - ITB Outstanding Student",
-    "1st Winner Rekkinnovation (2018)",
-    "1st Winner Bursa National Business Competition (2018)",
-    "Winner Microsoft Azure Mobile App Challenge (2018)"
-  ],
-  certificates: [
-    "Scikit-Learn for ML Classification (Coursera 2024)",
-    "Build ML Web App with Streamlit (Coursera 2024)",
-    "Containerize NodeJS in Docker (Coursera 2024)",
-    "DevOps Foundations (LinkedIn 2022)",
-    "Certified Risk Manager Level 1 (GARP 2020)",
-    "Associate Android Developer (Google 2018)"
-  ]
-};
-
-// --- Carousel Component ---
-const ImageCarousel = ({ images }) => {
-  const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
-
-  const variants = {
-    enter: (direction) => ({ x: direction > 0 ? 1000 : -1000, opacity: 0 }),
-    center: { zIndex: 1, x: 0, opacity: 1 },
-    exit: (direction) => ({ zIndex: 0, x: direction < 0 ? 1000 : -1000, opacity: 0 })
-  };
-
-  const paginate = (newDirection) => {
-    setDirection(newDirection);
-    setIndex((prev) => (prev + newDirection + images.length) % images.length);
-  };
-
-  return (
-    <div className="relative w-full h-64 md:h-80 bg-gray-200 rounded-2xl overflow-hidden mb-6 group">
-      <AnimatePresence initial={false} custom={direction}>
-        <motion.img
-          key={index}
-          src={images[index]}
-          custom={direction}
-          variants={variants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
-          className="absolute w-full h-full object-cover"
-        />
-      </AnimatePresence>
-      
-      {images.length > 1 && (
-        <>
-          <button onClick={(e) => { e.stopPropagation(); paginate(-1); }} className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/80 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-            <ChevronLeft size={20} className={THEME.text} />
-          </button>
-          <button onClick={(e) => { e.stopPropagation(); paginate(1); }} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/80 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-            <ChevronRight size={20} className={THEME.text} />
-          </button>
-        </>
-      )}
-    </div>
-  );
-};
-
-// --- Shared Components ---
-const Card = ({ children, className, onClick }) => {
-  const id = useId();
-  return (
-    <motion.div
-      layoutId={`card-${id}`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.01, boxShadow: "0px 10px 20px rgba(75, 56, 50, 0.1)" }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
-      className={`rounded-3xl p-6 cursor-pointer shadow-sm border border-[#E8DCCA] relative overflow-hidden ${THEME.card} ${className}`}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-const SectionIcon = ({ icon: Icon }) => (
-  <div className={`p-2 rounded-full w-fit mb-4 ${THEME.accent} text-white`}>
-    <Icon size={20} />
-  </div>
-);
-
-// --- Details Modals ---
-const GenericModal = ({ title, children, onClose }) => (
-  <motion.div 
-    initial={{ opacity: 0, scale: 0.95 }}
-    animate={{ opacity: 1, scale: 1 }}
-    exit={{ opacity: 0, scale: 0.95 }}
-    className={`${THEME.card} w-full max-w-lg p-8 rounded-3xl shadow-2xl relative m-4 max-h-[80vh] overflow-y-auto`}
-    onClick={(e) => e.stopPropagation()}
-  >
-    <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full z-20">
-      <X size={24} className={THEME.text} />
-    </button>
-    <h2 className={`text-2xl font-bold mb-6 ${THEME.text}`}>{title}</h2>
-    <div className="space-y-4">{children}</div>
-  </motion.div>
-);
-
-const ProjectDetail = ({ project, onClose }) => (
-  <motion.div 
-    initial={{ opacity: 0, scale: 0.9 }}
-    animate={{ opacity: 1, scale: 1 }}
-    exit={{ opacity: 0, scale: 0.9 }}
-    className={`${THEME.card} w-full max-w-3xl p-8 rounded-3xl shadow-2xl relative m-4 max-h-[90vh] overflow-y-auto`}
-    onClick={(e) => e.stopPropagation()}
-  >
-    <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/80 hover:bg-white rounded-full z-20 shadow-sm">
-      <X size={24} className={THEME.text} />
-    </button>
-    
-    {project.images && <ImageCarousel images={project.images} />}
-
-    <h2 className={`text-3xl font-bold mb-2 ${THEME.text}`}>{project.title}</h2>
-    <p className="text-[#8A9A5B] font-bold mb-4">{project.role}</p>
-    
-    <div className="flex gap-2 mb-6 flex-wrap">
-      {project.stack.map(tech => (
-        <span key={tech} className="px-3 py-1 bg-[#E8DCCA] text-xs rounded-full font-medium text-[#4B3832]">{tech}</span>
-      ))}
-    </div>
-    <p className={`text-lg mb-8 leading-relaxed text-[#6F4E37]`}>{project.desc}</p>
-    
-    <div className="flex gap-4">
-      <button className={`flex items-center gap-2 px-6 py-3 ${THEME.accent} text-white rounded-xl font-semibold hover:opacity-90`}>
-        <Github size={18} /> View Code
-      </button>
-      <button className={`flex items-center gap-2 px-6 py-3 border-2 ${THEME.border} ${THEME.text} rounded-xl font-semibold hover:bg-[#E8DCCA]`}>
-        <ExternalLink size={18} /> Live Demo
-      </button>
-    </div>
-  </motion.div>
-);
-
-// --- Main Application ---
 export default function Portfolio() {
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -330,7 +87,7 @@ export default function Portfolio() {
                 onClick={(e) => openProject(project, e)}
                 className="bg-white p-3 rounded-xl hover:shadow-md transition-all border border-transparent hover:border-[#D2B48C] cursor-pointer group/item flex gap-4 items-center"
               >
-                <div className="h-16 w-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                <div className="h-16 w-16 shrink-0 rounded-lg overflow-hidden bg-gray-100">
                   <img src={project.images[0]} alt={project.title} className="h-full w-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -518,7 +275,7 @@ export default function Portfolio() {
                  <ul className="space-y-3 mb-8">
                    {DATA.awards.map((a, i) => (
                      <li key={i} className="flex items-start gap-3 text-[#6F4E37] text-sm">
-                       <Award size={16} className="text-[#8A9A5B] mt-1 flex-shrink-0"/>
+                       <Award size={16} className="text-[#8A9A5B] mt-1 shrink-0"/>
                        <span>{a}</span>
                      </li>
                    ))}
@@ -528,7 +285,7 @@ export default function Portfolio() {
                  <ul className="space-y-3">
                    {DATA.certificates.map((c, i) => (
                      <li key={i} className="flex items-start gap-3 text-[#6F4E37] text-sm">
-                       <FileCheck size={16} className="text-[#8A9A5B] mt-1 flex-shrink-0"/>
+                       <FileCheck size={16} className="text-[#8A9A5B] mt-1 shrink-0"/>
                        <span>{c}</span>
                      </li>
                    ))}
