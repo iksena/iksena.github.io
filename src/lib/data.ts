@@ -1,7 +1,8 @@
 import { Cloud, Database, Layout, Linkedin, Mail, Server, Terminal, Github, Newspaper } from 'lucide-react';
 import { IMAGES } from '../assets/images.ts';
+import type { PortfolioData } from './types.ts';
 
-export const DATA = {
+export const DATA: PortfolioData = {
   profile: {
     name: "I Komang Sena Aji Buwana",
     roles: ["Software Engineer", "Technical Lead", "Master of Computing Student"],

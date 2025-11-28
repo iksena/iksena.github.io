@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Award,
+  Bell,
   Briefcase,
   ChevronRight,
   Code,
@@ -9,9 +10,8 @@ import {
   FileCheck,
   GraduationCap,
   MapPin,
-  Bell,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type MouseEvent as ReactMouseEvent, type ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from './components/Card.tsx';
 import { GenericModal } from './components/GenericModal.tsx';
@@ -19,26 +19,34 @@ import { ProjectDetail } from './components/ProjectDetail.tsx';
 import { SectionIcon } from './components/SectionIcon.tsx';
 import { DATA } from './lib/data.ts';
 import { THEME } from './lib/theme.ts';
+import type { Project, SectionKey } from './lib/types.ts';
 
-export default function Portfolio() {
-  const [selectedSection, setSelectedSection] = useState(null);
-  const [selectedProject, setSelectedProject] = useState(null);
+export default function Portfolio(): ReactElement {
+  const [selectedSection, setSelectedSection] = useState<SectionKey | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
-    document.body.style.overflow = (selectedSection || selectedProject) ? 'hidden' : 'unset';
+    document.body.style.overflow = selectedSection || selectedProject ? 'hidden' : 'unset';
   }, [selectedSection, selectedProject]);
 
-  const openProject = (project, e) => {
-    e.stopPropagation();
+  const openProject = (project: Project, event: ReactMouseEvent<HTMLDivElement>): void => {
+    event.stopPropagation();
     setSelectedProject(project);
   };
+
+  const closeModal = (): void => {
+    setSelectedSection(null);
+    setSelectedProject(null);
+  };
+
+  const skillCategoryPreview = DATA.skills.categories[1];
 
   return (
     <div className={`min-h-screen ${THEME.bg} p-4 md:p-8 font-sans flex items-center justify-center`}>
       <Link
         role="link"
         aria-label="News"
-        to="/news" 
+        to="/news"
         className="fixed top-4 right-4 z-40 flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E8DCCA] text-[#4B3832] hover:bg-white hover:shadow-md transition-all font-semibold"
       >
         <Bell size={18} />
@@ -68,9 +76,12 @@ export default function Portfolio() {
             
             <div>
               <h1 className={`text-3xl md:text-4xl font-bold ${THEME.text} leading-tight`}>{DATA.profile.name}</h1>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {DATA.profile.roles.map((role, i) => (
-                  <span key={i} className="text-sm font-semibold text-[#8A9A5B]">{role} {i < DATA.profile.roles.length - 1 && "•"}</span>
+              <div className="flex flex-wrap gap-2 mt-2" data-testid="roles-list">
+                {DATA.profile.roles.map((role, index) => (
+                  <span key={role} className="text-sm font-semibold text-[#8A9A5B]">
+                    {role}
+                    {index < DATA.profile.roles.length - 1 && ' •'}
+                  </span>
                 ))}
               </div>
             </div>
@@ -140,14 +151,16 @@ export default function Portfolio() {
 
         {/* 5. Skills */}
         <Card className="md:col-span-1 md:row-span-1" onClick={() => setSelectedSection('skills')}>
-           <SectionIcon icon={Cpu} />
-           <h3 className={`text-xl font-bold ${THEME.text} mb-3`}>Tech Stack</h3>
-           <div className="flex flex-wrap gap-1">
-             {DATA.skills.categories[1].items.slice(0, 3).map(s => (
-               <span key={s} className="text-[10px] px-2 py-1 bg-[#E8DCCA] rounded-md text-[#4B3832]">{s}</span>
-             ))}
-             <span className="text-[10px] px-2 py-1 text-[#888]">+ More</span>
-           </div>
+          <SectionIcon icon={Cpu} />
+          <h3 className={`text-xl font-bold ${THEME.text} mb-3`}>Tech Stack</h3>
+          <div className="flex flex-wrap gap-1">
+            {skillCategoryPreview?.items.slice(0, 3).map((skill) => (
+              <span key={skill} className="text-[10px] px-2 py-1 bg-[#E8DCCA] rounded-md text-[#4B3832]">
+                {skill}
+              </span>
+            ))}
+            <span className="text-[10px] px-2 py-1 text-[#888]">+ More</span>
+          </div>
         </Card>
 
         {/* 6. Awards */}
@@ -162,10 +175,12 @@ export default function Portfolio() {
       {/* --- MODAL CONTROLLER --- */}
       <AnimatePresence>
         {(selectedSection || selectedProject) && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-[#4B3832]/60 backdrop-blur-sm p-4"
-            onClick={() => { setSelectedSection(null); setSelectedProject(null); }}
+            onClick={closeModal}
           >
             
             {/* 1. Project Detail */}
@@ -213,10 +228,10 @@ export default function Portfolio() {
             {!selectedProject && selectedSection === 'projects' && (
               <GenericModal title="All Projects" onClose={() => setSelectedSection(null)}>
                 <div className="grid gap-4">
-                  {DATA.projects.map(p => (
+                    {DATA.projects.map((p) => (
                     <div 
                       key={p.id} 
-                      onClick={(e) => { e.stopPropagation(); setSelectedProject(p); }}
+                        onClick={(e) => { e.stopPropagation(); setSelectedProject(p); }}
                       className="p-4 border border-[#E8DCCA] rounded-xl hover:shadow-md hover:bg-[#FFF8F0] cursor-pointer transition-colors flex gap-4 items-center"
                     >
                       <img src={p.images[0]} alt={p.title} className="w-16 h-16 rounded-lg object-cover bg-gray-200" />
@@ -267,8 +282,8 @@ export default function Portfolio() {
             {!selectedProject && selectedSection === 'skills' && (
               <GenericModal title="Technical Skills" onClose={() => setSelectedSection(null)}>
                  <div className="space-y-6">
-                   {DATA.skills.categories.map((cat, idx) => (
-                     <div key={idx}>
+                  {DATA.skills.categories.map((cat) => (
+                    <div key={cat.name}>
                        <div className="flex items-center gap-2 mb-3 text-[#4B3832]">
                           <cat.icon size={18} className="text-[#8A9A5B]" />
                          <h4 className="font-bold">{cat.name}</h4>

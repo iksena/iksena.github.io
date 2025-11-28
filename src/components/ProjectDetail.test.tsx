@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ProjectDetail } from './ProjectDetail';
+import type { Project } from '../lib/types';
 
-const mockProject = {
+const mockProject: Project = {
   id: 'p1',
   title: 'Test Project',
   role: 'Software Engineer',
@@ -15,8 +16,11 @@ const mockProject = {
 
 describe('ProjectDetail', () => {
   beforeEach(() => {
-    // Mock window.open
-    global.window.open = vi.fn();
+    vi.spyOn(window, 'open').mockImplementation(() => null);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('renders project title', () => {
@@ -53,12 +57,11 @@ describe('ProjectDetail', () => {
   });
 
   it('does not render ImageCarousel when images are not provided', () => {
-    const projectWithoutImages = { ...mockProject, images: undefined };
+    const projectWithoutImages: Project = { ...mockProject, images: [] };
     render(<ProjectDetail project={projectWithoutImages} onClose={vi.fn()} />);
     
-    const images = screen.queryAllByRole('img');
-    // Only the close button icon should be present
-    expect(images.length).toBeLessThanOrEqual(1);
+    const img = screen.queryByRole('img');
+    expect(img).not.toBeInTheDocument();
   });
 
   it('calls onClose when close button is clicked', () => {
@@ -77,7 +80,7 @@ describe('ProjectDetail', () => {
     const learnMoreButton = screen.getByText('Learn More');
     learnMoreButton.click();
     
-    expect(window.open).toHaveBeenCalledWith('https://example.com', '_blank');
+    expect(window.open).toHaveBeenCalledWith('https://example.com', '_blank', 'noopener,noreferrer');
   });
 
   it('opens demo link when Live Demo button is clicked', () => {
@@ -86,7 +89,7 @@ describe('ProjectDetail', () => {
     const demoButton = screen.getByText('Live Demo');
     demoButton.click();
     
-    expect(window.open).toHaveBeenCalledWith('https://demo.example.com', '_blank');
+    expect(window.open).toHaveBeenCalledWith('https://demo.example.com', '_blank', 'noopener,noreferrer');
   });
 
   it('does not render Learn More button when link is not provided', () => {

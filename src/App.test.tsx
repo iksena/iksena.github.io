@@ -1,17 +1,22 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
+import type { HTMLAttributes, ImgHTMLAttributes, ReactNode } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { DATA } from './lib/data';
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }) => <div {...props}>{children}</div>,
-    img: ({ src, alt, ...props }) => <img src={src} alt={alt} {...props} />,
+    div: ({ children, ...props }: { children: ReactNode } & HTMLAttributes<HTMLDivElement>) => (
+      <div {...props}>{children}</div>
+    ),
+    img: ({ ...props }: { children?: ReactNode } & ImgHTMLAttributes<HTMLImageElement>) => (
+      <img {...props} alt={props.alt} />
+    ),
   },
-  AnimatePresence: ({ children }) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));
 
 describe('App (Portfolio)', () => {
