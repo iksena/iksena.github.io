@@ -9,8 +9,10 @@ import {
   FileCheck,
   GraduationCap,
   MapPin,
+  Bell,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card } from './components/Card.tsx';
 import { GenericModal } from './components/GenericModal.tsx';
 import { ProjectDetail } from './components/ProjectDetail.tsx';
@@ -33,6 +35,14 @@ export default function Portfolio() {
 
   return (
     <div className={`min-h-screen ${THEME.bg} p-4 md:p-8 font-sans flex items-center justify-center`}>
+      <Link
+        role="link"
+        aria-label="News"
+        to="/news" 
+        className="fixed top-4 right-4 z-40 flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E8DCCA] text-[#4B3832] hover:bg-white hover:shadow-md transition-all font-semibold"
+      >
+        <Bell size={18} />
+      </Link>
       
       <div className="max-w-7xl w-full h-full grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-4 md:h-[85vh]">
         

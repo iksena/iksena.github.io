@@ -190,5 +190,25 @@ export const DATA = {
     "DevOps Foundations (LinkedIn 2022)",
     "Certified Risk Manager Level 1 (GARP 2020)",
     "Associate Android Developer (Google 2018)"
+  ],
+  news: [
+    {
+      id: 1,
+      category: "Featured",
+      date: "21 November 2025",
+      title: "Featured by NatureHelm",
+      description: "I was featured by NatureHelm as a software engineer intern. I developed the NatureHelm platform for biodiversity analytics for corporate sustainability as part of ANU internship.",
+      ctaLink: "https://www.linkedin.com/posts/naturehelm_naturehelm-internship-techforgood-activity-7396424458422534144-YF3M?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAwnXRYBkZJ-mc_vbZQ0aD3kpvV88fY-ziM",
+      ctaText: "View on LinkedIn",
+    },
+    {
+      id: 2,
+      category: "Updates",
+      date: "17 February 2025",
+      title: "Started studying at ANU",
+      description: `I started studying at ANU as a Master of Computing student. My study is fully funded by LPDP Scholarship. I will focus my coursework on AI/ML and cloud-native architecture.`,
+      ctaLink: "https://programsandcourses.anu.edu.au/2026/program/7706XMCOMP",
+      ctaText: "Master of Computing",
+    }
   ]
 };
