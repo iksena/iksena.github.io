@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "prepare": "husky install",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "tsc && vitest"
@@ -36,6 +37,7 @@
     "globals": "^16.5.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
+    "husky": "^8.0.0",
     "vite": "^7.2.4"
   }
 }
