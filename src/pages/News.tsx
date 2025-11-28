@@ -1,11 +1,19 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Newspaper } from 'lucide-react';
+import { motion } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 import { THEME } from '../lib/theme.ts';
 import { DATA } from '../lib/data.ts';
 
 export default function News() {
   return (
-    <div className={`min-h-screen ${THEME.bg} p-4 md:p-8 font-sans`}>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.32 }}
+      className={`min-h-screen ${THEME.bg} p-4 md:p-8 font-sans`}
+    >
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -39,9 +47,9 @@ export default function News() {
               <h2 className="text-2xl font-bold text-[#4B3832] mb-2">
                 {item.title}
               </h2>
-              <p className="text-[#6F4E37] leading-relaxed mb-4">
-                {item.description}
-              </p>
+              <div className="text-[#6F4E37] leading-relaxed mb-4">
+                <ReactMarkdown>{item.description}</ReactMarkdown>
+              </div>
               {item.ctaLink && item.ctaText && (
                 <a
                   href={item.ctaLink}
@@ -57,7 +65,7 @@ export default function News() {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

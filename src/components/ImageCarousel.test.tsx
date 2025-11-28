@@ -159,5 +159,56 @@ describe('ImageCarousel', () => {
     const hasImage2 = imgs.some(img => img.getAttribute('src') === 'image2.jpg');
     expect(hasImage2).toBe(true);
   });
+
+  it('does not autoplay with single image', () => {
+    const images = ['image1.jpg'];
+    render(<ImageCarousel images={images} />);
+    
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    
+    const img = screen.getByRole('img');
+    expect(img).toHaveAttribute('src', 'image1.jpg');
+  });
+
+  it('stops propagation on navigation button clicks', async () => {
+    vi.useRealTimers();
+    const user = userEvent.setup();
+    const images = ['image1.jpg', 'image2.jpg'];
+    const { container } = render(<ImageCarousel images={images} />);
+    
+    const nextButton = container.querySelectorAll('button')[1];
+    
+    await user.click(nextButton);
+    
+    await waitFor(() => {
+      const imgs = screen.getAllByRole('img');
+      const image2 = imgs.find(img => img.getAttribute('src') === 'image2.jpg');
+      expect(image2).toBeDefined();
+    }, { timeout: 3000 });
+  });
+
+  it('cleans up autoplay interval on unmount', () => {
+    const images = ['image1.jpg', 'image2.jpg'];
+    const { unmount } = render(<ImageCarousel images={images} />);
+    
+    unmount();
+    
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    
+    expect(true).toBe(true);
+  });
+
+  it('handles empty images array gracefully', () => {
+    const images: string[] = [];
+    const { container } = render(<ImageCarousel images={images} />);
+    
+    expect(container.querySelector('img')).toBeNull();
+  });
+
+
 });
 

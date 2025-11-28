@@ -11,7 +11,8 @@ import {
   GraduationCap,
   MapPin,
 } from 'lucide-react';
-import { useEffect, useState, type MouseEvent as ReactMouseEvent, type ReactElement } from 'react';
+import { useEffect, useState, type ReactElement, type MouseEvent as ReactMouseEvent } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
 import { Card } from './components/Card.tsx';
 import { GenericModal } from './components/GenericModal.tsx';
@@ -42,7 +43,7 @@ export default function Portfolio(): ReactElement {
   const skillCategoryPreview = DATA.skills.categories[1];
 
   return (
-    <div className={`min-h-screen ${THEME.bg} p-4 md:p-8 font-sans flex items-center justify-center`}>
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.32 }} className={`min-h-screen ${THEME.bg} p-4 md:p-8 font-sans flex items-center justify-center`}>
       <Link
         role="link"
         aria-label="News"
@@ -123,7 +124,7 @@ export default function Portfolio(): ReactElement {
                     <h4 className="font-bold text-[#4B3832] truncate">{project.title}</h4>
                     <ExternalLink size={14} className="opacity-0 group-hover/item:opacity-100 text-[#8A9A5B]" />
                   </div>
-                  <p className="text-sm text-[#888] line-clamp-1">{project.desc}</p>
+                  <div className="text-sm text-[#888] line-clamp-1"><ReactMarkdown>{project.desc}</ReactMarkdown></div>
                   <div className="flex gap-1 mt-2 flex-wrap">
                      {project.stack.slice(0, 3).map(t => <span key={t} className="text-[10px] px-1.5 py-0.5 bg-[#F5F5DC] rounded text-[#6F4E37]">{t}</span>)}
                   </div>
@@ -258,7 +259,7 @@ export default function Portfolio(): ReactElement {
                       <span>{exp.date}</span>
                     </div>
                     <p className="text-xs text-[#888] mb-1">{exp.location}</p>
-                    <p className="text-[#6F4E37] text-sm leading-relaxed">{exp.desc}</p>
+                    <div className="text-[#6F4E37] text-sm leading-relaxed"><ReactMarkdown>{exp.desc}</ReactMarkdown></div>
                   </div>
                 ))}
               </GenericModal>
@@ -272,7 +273,7 @@ export default function Portfolio(): ReactElement {
                     <h4 className="font-bold text-lg text-[#4B3832]">{edu.school}</h4>
                     <p className="text-[#8A9A5B] font-bold">{edu.degree}</p>
                     <p className="text-xs text-[#888] mb-2">{edu.date}</p>
-                    <p className="text-[#6F4E37] mt-2 text-sm">{edu.details}</p>
+                    <div className="text-[#6F4E37] mt-2 text-sm"><ReactMarkdown>{edu.details}</ReactMarkdown></div>
                   </div>
                 ))}
               </GenericModal>
@@ -329,6 +330,6 @@ export default function Portfolio(): ReactElement {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }

@@ -66,14 +66,12 @@ export const DATA: PortfolioData = {
       role: "Software Engineer & Technical Lead",
       stack: ["Node.js", "React Native", "Microservices", "Kafka", "MongoDB", "Agile Scrum", "Docker", "Kubernetes"], 
       desc: `As Technical Lead, I steered a cross-functional division of 18 software engineers to deliver critical Wealth Management solutions for the Jenius app, serving over 5 million users. 
-      I spearheaded the end-to-end system design and launch of the Mutual Funds and Insurance platforms, a strategic initiative that successfully acquired 20,000 registered investors and generated IDR 3 billion in transaction volume within its first month. 
-      To support these operations, I also architected and built "J2Admin," a mission-critical back-office application using the MERN stack (MongoDB, Express, React, Node.js) that streamlined Know-Your-Customer (KYC) processes for Priority Banking and centralized push notification management.
-      \n\n
+      I spearheaded the **end-to-end system design and launch of the Mutual Funds and Insurance platforms**, a strategic initiative that successfully acquired 20,000 registered investors and generated IDR 3 billion in transaction volume within its first month. 
+      To support these operations, I also architected and built "J2Admin," a mission-critical back-office application using the MERN stack (MongoDB, Express, React, Node.js) that **streamlined Know-Your-Customer (KYC) processes for Priority Banking** and centralized push notification management.  
       On the architectural front, I collaborated closely with R&D and international partners to modernize the banking infrastructure. 
       This involved leading the migration of legacy investment core services to meet global quality standards and implementing a highly scalable, distributed system utilizing GraphQL and microservices. 
-      My role required navigating complex integrations with third-party banking cores while ensuring high availability and data consistency across the distributed network.
-      \n\n
-      Prior to assuming leadership, I established the platform’s engineering foundation as a Full-stack Engineer. 
+      My role required navigating complex integrations with third-party banking cores while ensuring high availability and data consistency across the distributed network.  
+      Prior to assuming leadership, **I established the platform's engineering foundation as a Full-stack Engineer**. 
       I introduced the Atomic Design principle to the Jenius revamp project, significantly enhancing UI reusability and maintainability, and published organization-wide front-end coding conventions to standardize development practices. 
       I also played a hands-on role in fortifying application security against vulnerabilities and developing core features using a robust stack of React, Redis, Elasticsearch, and Apache Kafka.`, 
       learnMoreLink: "https://www.jenius.com",

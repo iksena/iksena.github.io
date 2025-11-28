@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ExternalLink, Globe, X } from 'lucide-react';
 import { type MouseEvent, type ReactElement } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { THEME } from '../lib/theme.ts';
 import type { Project } from '../lib/types.ts';
 import { ImageCarousel } from './ImageCarousel.tsx';
@@ -42,7 +43,9 @@ export const ProjectDetail = ({ project, onClose }: ProjectDetailProps): ReactEl
         </span>
       ))}
     </div>
-    <p className="text-lg mb-8 leading-relaxed text-[#6F4E37]">{project.desc}</p>
+    <div className="text-lg mb-8 leading-relaxed text-[#6F4E37]">
+      <ReactMarkdown>{project.desc}</ReactMarkdown>
+    </div>
 
     <div className="flex gap-4">
       {project.learnMoreLink && (
