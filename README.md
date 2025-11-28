@@ -1,73 +1,137 @@
-# React + TypeScript + Vite
+# Portfolio Website - I Komang Sena Aji Buwana
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, interactive portfolio website built with React, TypeScript, and Framer Motion. Features a card-based layout with smooth animations, modal interactions, and a dedicated news section.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Interactive Card Layout**: Portfolio organized in a responsive grid with clickable cards
+- **Smooth Animations**: Page transitions and modal animations powered by Framer Motion
+- **Modal System**: Detailed views for projects, experience, education, skills, and awards
+- **News Section**: Dedicated page for updates and announcements with routing
+- **Image Carousel**: Swipeable project image galleries with autoplay
+- **Markdown Support**: Rich text rendering for project and experience descriptions
+- **Responsive Design**: Mobile-first design with Tailwind CSS
+- **Type-Safe**: Built with TypeScript for reliability
+- **Tested**: Comprehensive test coverage (79%+) with Vitest and React Testing Library
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: React 19 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS v4
+- **Animations**: Framer Motion
+- **Routing**: React Router DOM
+- **Markdown**: react-markdown
+- **Testing**: Vitest + React Testing Library
+- **Linting**: ESLint
+- **Git Hooks**: Husky (pre-commit lint & test checks)
 
-## Expanding the ESLint configuration
+## 📦 Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Install dependencies
+npm install
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Initialize git hooks
+npm run prepare
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🏃 Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# Start development server
+npm run dev
 ```
+
+The app will be available at `http://localhost:5173`
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests with coverage
+npm test -- --coverage
+
+# Run tests in watch mode
+npm test -- --watch
+```
+
+## 🔍 Linting
+
+```bash
+# Run ESLint with auto-fix
+npm run lint
+```
+
+## 🏗️ Build
+
+```bash
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## 📁 Project Structure
+
+```
+src/
+├── assets/          # Images and static assets
+├── components/      # Reusable React components
+│   ├── Card.tsx
+│   ├── GenericModal.tsx
+│   ├── ImageCarousel.tsx
+│   ├── ProjectDetail.tsx
+│   └── SectionIcon.tsx
+├── lib/             # Utilities and data
+│   ├── data.ts      # Portfolio content
+│   ├── theme.ts     # Theme configuration
+│   └── types.ts     # TypeScript types
+├── pages/           # Route pages
+│   └── News.tsx
+├── App.tsx          # Main portfolio component
+└── main.tsx         # Application entry point
+```
+
+## 🎨 Customization
+
+### Updating Portfolio Content
+
+Edit `src/lib/data.ts` to update:
+- Profile information
+- Work experience
+- Education
+- Projects
+- Skills
+- Awards and certificates
+- News items
+
+### Modifying Theme
+
+Edit `src/lib/theme.ts` to customize colors and styling constants.
+
+## 🔒 Git Hooks
+
+Pre-commit hooks are configured via Husky to:
+1. Run ESLint for code quality
+2. Execute tests to ensure nothing breaks
+3. Abort commit if checks fail
+
+To bypass hooks (not recommended):
+```bash
+git commit --no-verify -m "your message"
+```
+
+## 📄 License
+
+Private project
+
+## 👤 Author
+
+**I Komang Sena Aji Buwana**
+- Location: Canberra 🇦🇺 / Jakarta 🇮🇩
+- Email: i.buwana@anu.edu.au
+- LinkedIn: [linkedin.com/in/iksena](https://linkedin.com/in/iksena)
