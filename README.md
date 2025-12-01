@@ -75,6 +75,23 @@ npm run build
 npm run preview
 ```
 
+## 🐳 Docker
+
+```bash
+# Build the image
+docker build -t iksena/portfolio:latest .
+
+# Run the container on port 8080
+docker run --rm -p 8080:80 iksena/portfolio:latest
+```
+
+- `Dockerfile`: Multi-stage build (Node → Nginx), serves static site.
+- `nginx.conf`: SPA fallback to `index.html` for client-side routing.
+- `.dockerignore`: Reduces context size; site is built inside the container.
+- Build copies Vite output from `docs/` to Nginx `/usr/share/nginx/html`.
+
+If using GitHub Pages with a custom domain, `npm run build` also generates `docs/CNAME` with `sena.web.id`.
+
 ## 📁 Project Structure
 
 ```
