@@ -5,6 +5,7 @@ import { AnimatePresence } from 'framer-motion'
 import './index.css'
 import App from './App.tsx'
 import News from './pages/News.tsx'
+import Chat from './pages/Chat.tsx'
 
 export function AnimatedRoutes() {
   const location = useLocation();
@@ -14,7 +15,7 @@ export function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<App />} />
         <Route path="/news" element={<News />} />
-        {/* Add more routes here if needed */}
+        <Route path="/chat" element={<Chat />} />
       </Routes>
     </AnimatePresence>
   )

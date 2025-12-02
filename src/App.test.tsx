@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { HTMLAttributes, ImgHTMLAttributes, ReactNode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
@@ -59,16 +59,29 @@ describe('App (Portfolio)', () => {
     });
   });
 
-  it('renders navigation link to News page', () => {
+  it('renders Pages menu button and dropdown links', () => {
     render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
     );
     
-    const newsLink = screen.getByRole('link', { name: 'News' });
+    const menuButton = screen.getByRole('button', { name: /Pages Menu/i });
+    expect(menuButton).toBeInTheDocument();
+    
+    // Links should not be visible initially
+    expect(screen.queryByRole('link', { name: /News/i })).not.toBeInTheDocument();
+    
+    // Click to open menu
+    fireEvent.click(menuButton);
+    
+    // Links should now be visible
+    const newsLink = screen.getByRole('link', { name: /News/i });
+    const chatLink = screen.getByRole('link', { name: /Chat/i });
     expect(newsLink).toBeInTheDocument();
+    expect(chatLink).toBeInTheDocument();
     expect(newsLink.closest('a')).toHaveAttribute('href', '/news');
+    expect(chatLink.closest('a')).toHaveAttribute('href', '/chat');
   });
 
   it('renders projects section', () => {

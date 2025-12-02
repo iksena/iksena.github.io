@@ -10,6 +10,8 @@ import {
   FileCheck,
   GraduationCap,
   MapPin,
+  Menu,
+  MessageSquare,
 } from 'lucide-react';
 import { useEffect, useState, type ReactElement, type MouseEvent as ReactMouseEvent } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -25,6 +27,7 @@ import type { Project, SectionKey } from './lib/types.ts';
 export default function Portfolio(): ReactElement {
   const [selectedSection, setSelectedSection] = useState<SectionKey | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [showPageMenu, setShowPageMenu] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = selectedSection || selectedProject ? 'hidden' : 'unset';
@@ -44,14 +47,36 @@ export default function Portfolio(): ReactElement {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.32 }} className={`min-h-screen ${THEME.bg} p-4 md:p-8 font-sans flex items-center justify-center`}>
-      <Link
-        role="link"
-        aria-label="News"
-        to="/news"
-        className="fixed top-4 right-4 z-40 flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E8DCCA] text-[#4B3832] hover:bg-white hover:shadow-md transition-all font-semibold"
-      >
-        <Bell size={18} />
-      </Link>
+      {/* Floating Pages Menu */}
+      <div className="fixed top-4 right-4 z-40">
+        <button
+          aria-label="Pages Menu"
+          onClick={() => setShowPageMenu(!showPageMenu)}
+          className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E8DCCA] text-[#4B3832] hover:bg-white hover:shadow-md transition-all font-semibold"
+        >
+          <Menu size={18} />
+        </button>
+        {showPageMenu && (
+          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-[#E8DCCA] overflow-hidden">
+            <Link
+              to="/news"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-[#FFF8F0] transition-colors text-[#4B3832]"
+              onClick={() => setShowPageMenu(false)}
+            >
+              <Bell size={18} className="text-[#8A9A5B]" />
+              <span className="font-medium">News</span>
+            </Link>
+            <Link
+              to="/chat"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-[#FFF8F0] transition-colors text-[#4B3832] border-t border-[#E8DCCA]"
+              onClick={() => setShowPageMenu(false)}
+            >
+              <MessageSquare size={18} className="text-[#8A9A5B]" />
+              <span className="font-medium">Chat</span>
+            </Link>
+          </div>
+        )}
+      </div>
       
       <div className="max-w-7xl w-full h-full grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-4 md:h-[85vh]">
         
