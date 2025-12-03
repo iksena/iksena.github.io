@@ -28,6 +28,12 @@ import COMO_SUMMER from './images/como/summercamp.png';
 import FITHAPPY from './images/fithappy/ios.jpg';
 import FITHAPPY_MARKETING from './images/fithappy/marketing.jpg';
 import FITHAPPY_PARTNERSHIP from './images/fithappy/partnership.jpg';
+import ARPRO from './images/arpro/arpro.jpg';
+import ARPRO_MAG_1 from './images/arpro/arpro-cremona1.png';
+import ARPRO_MAG_2 from './images/arpro/arpro-cremona2.png';
+import BUANA from './images/buana/buana.jpg';
+import BUANA_2 from './images/buana/buana-2.jpg';
+import BUANA_3 from './images/buana/buana-3.jpg';
 
 export const IMAGES = {
   DP,
@@ -71,5 +77,15 @@ export const IMAGES = {
     FITHAPPY,
     FITHAPPY_MARKETING,
     FITHAPPY_PARTNERSHIP,
+  },
+  ARPRO: {
+    ARPRO,
+    ARPRO_MAG_1,
+    ARPRO_MAG_2,
+  },
+  BUANA: {
+    BUANA,
+    BUANA_2,
+    BUANA_3,
   },
 };

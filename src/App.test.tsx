@@ -42,7 +42,6 @@ describe('App (Portfolio)', () => {
     
     expect(screen.getByText(DATA.profile.name)).toBeInTheDocument();
     expect(screen.getByText(DATA.profile.location)).toBeInTheDocument();
-    expect(screen.getByText(DATA.profile.objective)).toBeInTheDocument();
   });
 
   it('renders all role tags', () => {

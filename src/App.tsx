@@ -115,9 +115,9 @@ export default function Portfolio(): ReactElement {
 
           <div className="mt-4">
             <h3 className="text-xs font-bold uppercase text-[#4B3832]/50 tracking-widest mb-2">Objective</h3>
-            <p className="text-[#6F4E37] text-md md:text-lg leading-relaxed line-clamp-3">
+            <ReactMarkdown className="text-[#6F4E37] text-md md:text-lg leading-relaxed line-clamp-3">
               {DATA.profile.objective}
-            </p>
+            </ReactMarkdown>
           </div>
 
           <div className="mt-6 flex justify-between items-end">
@@ -217,9 +217,9 @@ export default function Portfolio(): ReactElement {
             {/* 2. About / Profile Modal */}
             {!selectedProject && selectedSection === 'about' && (
               <GenericModal title="About Me" onClose={() => setSelectedSection(null)}>
-                <p className="text-[#6F4E37] leading-relaxed text-lg">
+                <ReactMarkdown className="text-[#6F4E37] leading-relaxed text-lg">
                   {DATA.profile.objective}
-                </p>
+                </ReactMarkdown>
                 <div className="py-4 space-y-3">
                    <div className="flex items-center gap-3 p-3 bg-[#FFF8F0] border border-[#E8DCCA] rounded-xl">
                       <MapPin className="text-[#8A9A5B]" />

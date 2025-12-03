@@ -43,9 +43,9 @@ export const ProjectDetail = ({ project, onClose }: ProjectDetailProps): ReactEl
         </span>
       ))}
     </div>
-    <div className="text-lg mb-8 leading-relaxed text-[#6F4E37]">
+    <article className="prose lg:prose-xl text-lg mb-8 leading-relaxed text-[#6F4E37] [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:my-4 [&_li]:my-2">
       <ReactMarkdown>{project.desc}</ReactMarkdown>
-    </div>
+    </article>
 
     <div className="flex gap-4">
       {project.learnMoreLink && (
