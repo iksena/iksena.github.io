@@ -14,7 +14,7 @@ export const GenericModal = ({ title, children, onClose }: GenericModalProps): R
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
     exit={{ opacity: 0, scale: 0.95 }}
-    className={`${THEME.card} w-full max-w-lg p-8 rounded-3xl shadow-2xl relative m-4 max-h-[80vh] overflow-y-auto`}
+    className={`${THEME.card} w-full max-w-lg p-8 rounded-3xl shadow-2xl relative m-4 max-h-[80vh] overflow-y-auto custom-scrollbar`}
     onClick={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}
   >
     <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full z-20" type="button">

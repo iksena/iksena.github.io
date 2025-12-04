@@ -106,7 +106,7 @@ export default function Portfolio(): ReactElement {
                    transition={{ duration: 0.5 }}
                  />
                </div>
-               <div className="flex gap-2 items-center px-3 py-1 bg-white/60 rounded-full border border-[#E8DCCA]">
+               <div className="flex gap-2 ml-5 items-center px-3 py-1 bg-white/60 rounded-full border border-[#E8DCCA]">
                  <MapPin size={14} className="text-[#8A9A5B]" />
                  <span className="text-xs text-[#6F4E37] font-bold uppercase tracking-wide">{DATA.profile.location}</span>
                </div>
@@ -146,7 +146,7 @@ export default function Portfolio(): ReactElement {
             <span className="text-xs uppercase tracking-widest text-[#8A9A5B] font-bold">View All</span>
           </div>
           <h3 className={`text-2xl font-bold ${THEME.text} mb-3`}>Selected Projects</h3>
-          <div className="space-y-3 overflow-y-auto pr-2 custom-scrollbar">
+          <div className="space-y-3 overflow-y-auto max-h-[250px] pr-2 custom-scrollbar">
             {DATA.projects.map((project) => (
               <div 
                 key={project.id}

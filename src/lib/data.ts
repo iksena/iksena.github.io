@@ -1,4 +1,4 @@
-import { Cloud, Database, Layout, Linkedin, Mail, Server, Terminal, Github, Newspaper } from 'lucide-react';
+import { Cloud, Database, Layout, Linkedin, Mail, Server, Terminal, Github, Newspaper, Speech } from 'lucide-react';
 import { IMAGES } from '../assets/images.ts';
 import type { PortfolioData } from './types.ts';
 
@@ -7,7 +7,7 @@ export const DATA: PortfolioData = {
     name: "I Komang Sena Aji Buwana",
     roles: ["Software Engineer", "Technical Lead", "Master of Computing Student"],
     objective: "Results-driven software engineer with 5+ years of experience building **full-stack fintech and digital products used by millions of users** in leading Indonesian banks and startups. Skilled in designing and delivering scalable, cloud-ready systems with modern JavaScript/TypeScript stacks, React/React Native, Node.js, GraphQL, and containerized microservices, complemented by strong DevOps exposure on Docker, Kubernetes, and OpenShift. Demonstrated leadership through **technical lead roles, Agile team enablement, and end-to-end ownership** of wealth management, payments, and investment features that improved user growth, automation, and code quality metrics. Entrepreneurial and product-minded, with experience co-founding an ed-tech startup, freelancing across banking, wellness, and ecommerce domains, and consistently winning national-level competitions and scholarships for innovation and impact. Currently pursuing a **Master of Computing at the Australian National University** with a focus on algorithms, machine learning, and AI-driven, cloud-native architectures, and eager to drive high-impact solutions at the intersection of **software engineering and intelligent systems.**",
-    location: "Canberra 🇦🇺 / Jakarta 🇮🇩",
+    location: "Canberra🇦🇺 ↔️ Jakarta🇮🇩",
     email: "mail@sena.web.id",
     avatar: IMAGES.DP,
   },
@@ -222,11 +222,12 @@ export const DATA: PortfolioData = {
   ],
   skills: {
     categories: [
-      { name: "Languages", items: ["Indonesian (Native)", "English (Advanced C1)"], icon: Terminal },
-      { name: "Frontend & Mobile", items: ["React.js", "Next.js", "React Native", "Flutter", "Angular", "Tailwind CSS", "HTML5"], icon: Layout },
-      { name: "Backend", items: ["Node.js", "Express.js", "Java", "PHP", "Python", "C++", "GraphQL", "Kafka"], icon: Server },
+      { name: "Languages", items: ["Indonesian (Native)", "English (Advanced C1)"], icon: Speech },
+      { name: "Programming Languages", items: ["Typescript", "Java", "Python", "C++", "PHP", "Javascript", "Shopify Liquid"], icon: Terminal },
+      { name: "Frontend & Mobile", items: ["React Native", "React.js", "Next.js", "Flutter", "Angular", "Tailwind CSS", "HTML5"], icon: Layout },
+      { name: "Backend", items: ["Node.js", "Express.js", "Java Spring", "Laravel", "GraphQL", "Kafka", "Flask", "NewRelic"], icon: Server },
       { name: "Database", items: ["PostgreSQL", "MongoDB", "Redis"], icon: Database },
-      { name: "DevOps & Cloud", items: ["Docker", "Kubernetes", "Red Hat OpenShift", "Jenkins", "Git"], icon: Cloud },
+      { name: "DevOps & Cloud", items: ["Docker", "Kubernetes", "Red Hat OpenShift", "AWS", "Jenkins", "Git", "JMeter"], icon: Cloud },
     ]
   },
   awards: [
