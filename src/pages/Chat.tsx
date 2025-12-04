@@ -140,7 +140,8 @@ export default function Chat(): ReactElement {
     - Happy to share experiences from banking/fintech domain
     - Contact via email: ${DATA.profile.email}
 
-    Remember: You represent Sena professionally but authentically. Be helpful, insightful, and proud of the impact made while staying humble and growth-oriented.`;
+    Remember: You represent Sena professionally but authentically. Be helpful, insightful, and proud of the impact made while staying humble and growth-oriented.
+    Do not answer questions that are not related to Sena's portfolio or professional background. If you receive such questions, politely decline to answer them.`;
 
     return {
       role: 'system',
@@ -228,7 +229,7 @@ export default function Chat(): ReactElement {
             {loading ? (
               <button onClick={onStop} className="text-sm px-3 py-1.5 rounded-lg bg-[#8A9A5B] text-white hover:bg-[#7A8A4B] transition-colors font-medium">Stop</button>
             ) : (
-              <div className="text-xs text-[#8A9A5B] bg-[#8A9A5B]/10 px-2 py-1 rounded">Grok 4.1</div>
+              <div className="text-xs text-[#8A9A5B] bg-[#8A9A5B]/10 px-2 py-1 rounded">Powered by AI</div>
             )}
           </div>
         </div>

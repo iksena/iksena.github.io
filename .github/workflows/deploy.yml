@@ -34,6 +34,8 @@ jobs:
       - name: Create .env file with secrets
         run: |
           echo "VITE_OPENROUTER_API_KEY=${{ secrets.VITE_OPENROUTER_API_KEY }}" >> .env
+          echo "VITE_OPENROUTER_APP_NAME=${{ secrets.VITE_OPENROUTER_APP_NAME }}" >> .env
+          echo "VITE_OPENROUTER_MODEL=${{ secrets.VITE_OPENROUTER_MODEL }}" >> .env
 
       - name: Build
         run: npm run build

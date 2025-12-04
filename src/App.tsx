@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState, type ReactElement, type MouseEvent as ReactMouseEvent } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card } from './components/Card.tsx';
 import { GenericModal } from './components/GenericModal.tsx';
 import { ProjectDetail } from './components/ProjectDetail.tsx';
@@ -25,9 +25,21 @@ import { THEME } from './lib/theme.ts';
 import type { Project, SectionKey } from './lib/types.ts';
 
 export default function Portfolio(): ReactElement {
+  const navigate = useNavigate();
   const [selectedSection, setSelectedSection] = useState<SectionKey | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showPageMenu, setShowPageMenu] = useState(false);
+
+  useEffect(() => {
+    const redirectPath = sessionStorage.getItem('redirect');
+    if (redirectPath) {
+      sessionStorage.removeItem('redirect');
+      const path = new URL(redirectPath, window.location.origin).pathname;
+      if (path !== '/' && path !== '') {
+        navigate(path);
+      }
+    }
+  }, [navigate]);
 
   useEffect(() => {
     document.body.style.overflow = selectedSection || selectedProject ? 'hidden' : 'unset';
@@ -134,7 +146,7 @@ export default function Portfolio(): ReactElement {
             <span className="text-xs uppercase tracking-widest text-[#8A9A5B] font-bold">View All</span>
           </div>
           <h3 className={`text-2xl font-bold ${THEME.text} mb-3`}>Selected Projects</h3>
-          <div className="space-y-3 overflow-y-auto max-h-[250px] pr-2 custom-scrollbar">
+          <div className="space-y-3 overflow-y-auto pr-2 custom-scrollbar">
             {DATA.projects.map((project) => (
               <div 
                 key={project.id}
