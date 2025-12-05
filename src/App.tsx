@@ -7,6 +7,7 @@ import {
   Code,
   Cpu,
   ExternalLink,
+  FileDown,
   FileCheck,
   GraduationCap,
   MapPin,
@@ -132,10 +133,22 @@ export default function Portfolio(): ReactElement {
             </ReactMarkdown>
           </div>
 
-          <div className="mt-6 flex justify-between items-end">
-             <div className="px-4 py-2 bg-white/50 rounded-lg text-sm font-semibold text-[#4B3832] hover:bg-white transition-colors">
-               More Details & Socials →
-             </div>
+          <div className="mt-6 flex flex-wrap gap-2 justify-start items-center">
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setSelectedSection('about'); }}
+              className="px-4 py-2 bg-white/70 rounded-lg text-sm font-semibold text-[#4B3832] hover:bg-white transition-colors border border-[#E8DCCA] shadow-sm"
+            >
+              More Details & Socials →
+            </button>
+            <a
+              href="/cv.pdf"
+              download
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#8A9A5B] hover:bg-[#7A8A4B] transition-colors shadow-sm border border-transparent"
+            >
+              <FileDown size={16} /> Download CV
+            </a>
           </div>
         </Card>
 
@@ -244,7 +257,7 @@ export default function Portfolio(): ReactElement {
 
                 <div>
                   <h4 className="font-bold text-[#4B3832] mb-3">Connect with me</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                     {DATA.socials.map((social) => (
                       <a 
                         key={social.id}
@@ -258,6 +271,14 @@ export default function Portfolio(): ReactElement {
                       </a>
                     ))}
                   </div>
+                  <a
+                    href="/cv.pdf"
+                    download
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center justify-center gap-2 px-4 py-4 rounded-lg text-sm font-semibold text-white bg-[#8A9A5B] hover:bg-[#7A8A4B] transition-colors shadow-sm border border-transparent"
+                  >
+                    <FileDown size={16} /> Download CV
+                  </a>
                 </div>
               </GenericModal>
             )}
