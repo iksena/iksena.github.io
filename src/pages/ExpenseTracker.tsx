@@ -181,7 +181,7 @@ const AddExpenseModal = ({
   householdSettings: HouseholdSettings;
   initialData?: Expense;
 }) => {
-  const [amount, setAmount] = useState(initialData ? initialData.amount.toString() : '');
+  const [amountInput, setAmountInput] = useState(initialData ? initialData.amount.toString() : '');
   const [currency, setCurrency] = useState<Currency>(initialData ? initialData.currency : 'IDR');
   const [category, setCategory] = useState<Category>(initialData ? initialData.category : 'Food');
   const [spender, setSpender] = useState<Spender>(initialData ? initialData.spender : 'User 1');
@@ -189,12 +189,28 @@ const AddExpenseModal = ({
   const [date, setDate] = useState(initialData ? initialData.date : new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+
+  const calculateTotal = useCallback((input: string): number => {
+    try {
+      return input.split('+').reduce((sum, val) => {
+        const num = parseFloat(val.trim());
+        return sum + (isNaN(num) ? 0 : num);
+      }, 0);
+    } catch {
+      return 0;
+    }
+  }, []);
+
+  const currentTotal = useMemo(() => calculateTotal(amountInput), [amountInput, calculateTotal]);
+
   const handleSubmit = async () => {
-    if (!amount || parseFloat(amount) <= 0 || isSubmitting) return;
+    const finalAmount = calculateTotal(amountInput);
+    
+    if (!finalAmount || finalAmount <= 0 || isSubmitting) return;
 
     setIsSubmitting(true);
     await onSubmit({
-      amount: parseFloat(amount),
+      amount: finalAmount,
       currency,
       category,
       spender,
@@ -231,13 +247,24 @@ const AddExpenseModal = ({
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Amount 
+              {amountInput.includes('+') && (
+                <span className="ml-2 text-purple-600 font-bold">
+                  = {formatCurrency(currentTotal, currency)}
+                </span>
+              )}
+            </label>
             <input
-              type="number"
-              inputMode="decimal"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00"
+              type="text"
+              inputMode="text" 
+              value={amountInput}
+              onChange={(e) => {
+                if (/^[0-9.+\s]*$/.test(e.target.value)) {
+                  setAmountInput(e.target.value);
+                }
+              }}
+              placeholder="e.g. 50+20+10"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
             />
           </div>
@@ -314,7 +341,7 @@ const AddExpenseModal = ({
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={handleSubmit}
-          disabled={!amount || parseFloat(amount) <= 0 || isSubmitting}
+          disabled={parseFloat(currentTotal) <= 0 || isSubmitting}
           className="w-full mt-6 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex justify-center items-center gap-2"
         >
           {isSubmitting ? (
