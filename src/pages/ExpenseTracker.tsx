@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Wallet, Plus, Settings, CreditCard, Trash2, TrendingUp, Users, LogOut, Calendar, ChevronLeft, ChevronRight, Filter, X } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Wallet, Plus, Settings, CreditCard, Trash2, TrendingUp, Users, LogOut, Calendar, ChevronLeft, ChevronRight, Filter, X, Loader2, Edit2, AlertTriangle } from 'lucide-react';
 import { createClient, SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -14,7 +14,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
 // --- Types ---
-// NOTE: Property names are lowercase to match PostgreSQL unquoted column definitions
 type Currency = 'IDR' | 'AUD';
 type Category = 'Food' | 'Entertainment' | 'Needs' | 'Transport' | 'Uncategorized';
 type Spender = 'User 1' | 'User 2' | 'Together';
@@ -26,9 +25,9 @@ interface Expense {
   category: Category;
   spender: Spender;
   description: string;
-  date: string;       // SQL: DATE
-  householdid: string; // SQL: householdId -> householdid
-  createdat: string;   // SQL: createdAt -> createdat
+  date: string;
+  householdid: string;
+  createdat: string;
 }
 
 interface RecurringBill {
@@ -37,22 +36,22 @@ interface RecurringBill {
   amount: number;
   currency: Currency;
   category: Category;
-  recurrenceday: number; // SQL: recurrenceDay -> recurrenceday
-  householdid: string;   // SQL: householdId -> householdid
+  recurrenceday: number;
+  householdid: string;
 }
 
 interface Budget {
   id: string;
   category: Category;
-  limitidr: number; // SQL: limitIDR -> limitidr
-  limitaud: number; // SQL: limitAUD -> limitaud
+  limitidr: number;
+  limitaud: number;
   householdid: string;
 }
 
 interface HouseholdSettings {
-  householdid: string; // PK
-  user1name: string;   // SQL: user1Name -> user1name
-  user2name: string;   // SQL: user2Name -> user2name
+  householdid: string;
+  user1name: string;
+  user2name: string;
 }
 
 // --- Animation Variants ---
@@ -103,9 +102,28 @@ const getMonthName = (dateString: string): string => {
   return date.toLocaleString('default', { month: 'long', year: 'numeric' });
 };
 
+const formatDateFriendly = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('default', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
 // --- Components ---
 
-// 1. Login / Passphrase Screen
+// 1. Loading Screen
+const LoadingScreen = () => (
+  <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex flex-col items-center justify-center p-4">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center"
+    >
+      <Loader2 className="w-10 h-10 text-purple-600 animate-spin mb-4" />
+      <p className="text-gray-600 font-medium">Loading your finances...</p>
+    </motion.div>
+  </div>
+);
+
+// 2. Login / Passphrase Screen
 const LoginScreen = ({ onJoin }: { onJoin: (pass: string) => void }) => {
   const [pass, setPass] = useState('');
 
@@ -151,27 +169,31 @@ const LoginScreen = ({ onJoin }: { onJoin: (pass: string) => void }) => {
   );
 };
 
-// 2. Add Expense Modal
+// 3. Add/Edit Expense Modal
 const AddExpenseModal = ({ 
   onClose, 
-  onAdd,
-  householdSettings
+  onSubmit,
+  householdSettings,
+  initialData
 }: { 
   onClose: () => void; 
-  onAdd: (expense: Omit<Expense, 'id' | 'createdat' | 'householdid'>) => void;
+  onSubmit: (expense: Omit<Expense, 'id' | 'createdat' | 'householdid'>) => Promise<void>;
   householdSettings: HouseholdSettings;
+  initialData?: Expense;
 }) => {
-  const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState<Currency>('IDR');
-  const [category, setCategory] = useState<Category>('Food');
-  const [spender, setSpender] = useState<Spender>('User 1');
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [amount, setAmount] = useState(initialData ? initialData.amount.toString() : '');
+  const [currency, setCurrency] = useState<Currency>(initialData ? initialData.currency : 'IDR');
+  const [category, setCategory] = useState<Category>(initialData ? initialData.category : 'Food');
+  const [spender, setSpender] = useState<Spender>(initialData ? initialData.spender : 'User 1');
+  const [description, setDescription] = useState(initialData ? initialData.description : '');
+  const [date, setDate] = useState(initialData ? initialData.date : new Date().toISOString().split('T')[0]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    if (!amount || parseFloat(amount) <= 0) return;
+  const handleSubmit = async () => {
+    if (!amount || parseFloat(amount) <= 0 || isSubmitting) return;
 
-    onAdd({
+    setIsSubmitting(true);
+    await onSubmit({
       amount: parseFloat(amount),
       currency,
       category,
@@ -179,6 +201,7 @@ const AddExpenseModal = ({
       description,
       date,
     });
+    setIsSubmitting(false);
     onClose();
   };
 
@@ -200,7 +223,7 @@ const AddExpenseModal = ({
         className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto"
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Add Expense</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{initialData ? 'Edit Expense' : 'Add Expense'}</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             <X className="w-6 h-6" />
           </button>
@@ -291,17 +314,74 @@ const AddExpenseModal = ({
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={handleSubmit}
-          disabled={!amount || parseFloat(amount) <= 0}
-          className="w-full mt-6 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+          disabled={!amount || parseFloat(amount) <= 0 || isSubmitting}
+          className="w-full mt-6 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex justify-center items-center gap-2"
         >
-          Add Expense
+          {isSubmitting ? (
+             <><Loader2 className="w-5 h-5 animate-spin"/> Saving...</>
+          ) : (
+             initialData ? "Save Changes" : "Add Expense"
+          )}
         </motion.button>
       </motion.div>
     </motion.div>
   );
 };
 
-// 3. Settings Modal
+// 4. Confirm Delete Modal
+const ConfirmModal = ({ 
+  isOpen, 
+  onClose, 
+  onConfirm, 
+  title, 
+  message 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  onConfirm: () => void; 
+  title: string; 
+  message: string;
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 flex items-center justify-center p-4 z-[60]"
+      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+    >
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6"
+      >
+        <div className="flex items-center gap-3 text-red-600 mb-4">
+          <AlertTriangle className="w-6 h-6" />
+          <h3 className="text-lg font-bold">{title}</h3>
+        </div>
+        <p className="text-gray-600 mb-6">{message}</p>
+        <div className="flex justify-end gap-3">
+          <button 
+            onClick={onClose}
+            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium"
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={onConfirm}
+            className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors font-medium"
+          >
+            Delete
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+// 5. Settings Modal (Unchanged logic, just keeping structure)
 const SettingsModal = ({ 
   onClose, 
   householdSettings,
@@ -316,10 +396,10 @@ const SettingsModal = ({
   householdSettings: HouseholdSettings;
   budgets: Budget[];
   recurringBills: RecurringBill[];
-  onUpdateSettings: (settings: HouseholdSettings) => void;
-  onUpdateBudget: (category: Category, limitIDR: number, limitAUD: number) => void;
-  onAddRecurringBill: (bill: Omit<RecurringBill, 'id' | 'householdid'>) => void;
-  onDeleteRecurringBill: (id: string) => void;
+  onUpdateSettings: (settings: HouseholdSettings) => Promise<void>;
+  onUpdateBudget: (category: Category, limitIDR: number, limitAUD: number) => Promise<void>;
+  onAddRecurringBill: (bill: Omit<RecurringBill, 'id' | 'householdid'>) => Promise<void>;
+  onDeleteRecurringBill: (id: string) => Promise<void>;
 }) => {
   const [user1Name, setUser1Name] = useState(householdSettings.user1name);
   const [user2Name, setUser2Name] = useState(householdSettings.user2name);
@@ -337,17 +417,17 @@ const SettingsModal = ({
   const [billCategory, setBillCategory] = useState<Category>('Needs');
   const [billDay, setBillDay] = useState('1');
 
-  const handleSaveUsers = () => {
-    onUpdateSettings({ 
+  const handleSaveUsers = async () => {
+    await onUpdateSettings({ 
       ...householdSettings,
       user1name: user1Name, 
       user2name: user2Name 
     });
   };
 
-  const handleSaveBudget = () => {
+  const handleSaveBudget = async () => {
     if (!budgetIDR && !budgetAUD) return;
-    onUpdateBudget(
+    await onUpdateBudget(
       budgetCategory,
       parseFloat(budgetIDR) || 0,
       parseFloat(budgetAUD) || 0
@@ -356,9 +436,9 @@ const SettingsModal = ({
     setBudgetAUD('');
   };
 
-  const handleAddBill = () => {
+  const handleAddBill = async () => {
     if (!billName || !billAmount || parseFloat(billAmount) <= 0) return;
-    onAddRecurringBill({
+    await onAddRecurringBill({
       name: billName,
       amount: parseFloat(billAmount),
       currency: billCurrency,
@@ -669,12 +749,13 @@ const SettingsModal = ({
   );
 };
 
-// 4. Main App Component
+// 6. Main App Component
 const ExpenseTracker = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [userId, setUserId] = useState<string | null>(null);
   const [householdId, setHouseholdId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [budgets, setBudgets] = useState<Budget[]>([]);
@@ -686,52 +767,65 @@ const ExpenseTracker = () => {
   });
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null); // New state for edit
+  const [deletingId, setDeletingId] = useState<string | null>(null); // New state for delete confirm
   const [showSettings, setShowSettings] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
   const [filterCategory, setFilterCategory] = useState<Category | 'All'>('All');
 
-  // Fetch functions
-  const fetchExpenses = async () => {
+  // Initialization Effect (Check LocalStorage)
+  useEffect(() => {
+    const savedHouseholdId = localStorage.getItem('householdId');
+    if (savedHouseholdId) {
+      setHouseholdId(savedHouseholdId);
+      setIsAuthenticated(true);
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Fetch functions using callbacks
+  const fetchExpenses = useCallback(async () => {
     if (!householdId) return;
     const { data, error } = await supabase
       .from('expenses')
       .select('*')
-      .eq('householdid', householdId) // Lowercase column name
+      .eq('householdid', householdId)
       .order('date', { ascending: false })
-      .order('createdat', { ascending: false }); // Lowercase column name
+      .order('createdat', { ascending: false });
 
     if (error) console.error('Error fetching expenses:', error);
     else setExpenses(data || []);
-  };
+  }, [householdId]);
 
-  const fetchBudgets = async () => {
+  const fetchBudgets = useCallback(async () => {
     if (!householdId) return;
     const { data, error } = await supabase
       .from('budgets')
       .select('*')
-      .eq('householdid', householdId); // Lowercase column name
+      .eq('householdid', householdId);
 
     if (error) console.error('Error fetching budgets:', error);
     else setBudgets(data || []);
-  };
+  }, [householdId]);
 
-  const fetchRecurringBills = async () => {
+  const fetchRecurringBills = useCallback(async () => {
     if (!householdId) return;
     const { data, error } = await supabase
       .from('recurring_bills')
       .select('*')
-      .eq('householdid', householdId); // Lowercase column name
+      .eq('householdid', householdId);
 
     if (error) console.error('Error fetching recurring bills:', error);
     else setRecurringBills(data || []);
-  };
+  }, [householdId]);
 
-  const fetchHouseholdSettings = async () => {
+  const fetchHouseholdSettings = useCallback(async () => {
     if (!householdId) return;
     const { data, error } = await supabase
       .from('household_settings')
       .select('*')
-      .eq('householdid', householdId) // Lowercase column name
+      .eq('householdid', householdId)
       .single();
 
     if (error && error.code !== 'PGRST116') console.error('Error fetching household settings:', error);
@@ -742,7 +836,7 @@ const ExpenseTracker = () => {
             user2name: data.user2name || 'User 2' 
         });
     }
-  };
+  }, [householdId]);
 
   // Realtime subscriptions
   useEffect(() => {
@@ -752,7 +846,6 @@ const ExpenseTracker = () => {
     const tables = ['expenses', 'budgets', 'recurring_bills', 'household_settings'];
 
     tables.forEach(table => {
-      // NOTE: Filter string must use lowercase column name (householdid) to match DB
       const channel = supabase.channel(`${table}-changes`)
         .on('postgres_changes', { event: '*', schema: 'public', table, filter: `householdid=eq.${householdId}` }, () => {
           if (table === 'expenses') fetchExpenses();
@@ -765,35 +858,41 @@ const ExpenseTracker = () => {
     });
 
     return () => channels.forEach(c => supabase.removeChannel(c));
-  }, [householdId]);
+  }, [householdId, fetchExpenses, fetchBudgets, fetchRecurringBills, fetchHouseholdSettings]);
 
-  // Initial fetch on authentication
+  // Initial Data Fetch
   useEffect(() => {
     if (householdId) {
+      setIsLoading(true);
       (async () => {
         await Promise.all([fetchExpenses(), fetchBudgets(), fetchRecurringBills(), fetchHouseholdSettings()]);
+        setIsLoading(false);
       })();
     }
-  }, [householdId]);
+  }, [householdId, fetchExpenses, fetchBudgets, fetchRecurringBills, fetchHouseholdSettings]);
 
   // Authentication
   const handleJoinHousehold = async (passphrase: string) => {
+    setIsLoading(true);
     try {
       const { data: authData, error: authError } = await supabase.auth.signInAnonymously();
       if (authError) throw authError;
       if (authData.user) {
         setUserId(authData.user.id);
         setHouseholdId(passphrase);
+        localStorage.setItem('householdId', passphrase);
         setIsAuthenticated(true);
       }
     } catch (error) {
       console.error('Error joining household:', error);
       alert('Authentication failed.');
+      setIsLoading(false);
     }
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    localStorage.removeItem('householdId');
     setIsAuthenticated(false);
     setUserId(null);
     setHouseholdId(null);
@@ -808,15 +907,34 @@ const ExpenseTracker = () => {
     if (!householdId) return;
     const { error } = await supabase.from('expenses').insert({ 
         ...expense, 
-        householdid: householdId, // Lowercase column name
-        createdat: new Date().toISOString() // Lowercase column name
+        householdid: householdId,
+        createdat: new Date().toISOString()
     });
     if (error) alert('Failed to add expense.');
+    else await fetchExpenses();
   };
 
-  const handleDeleteExpense = async (id: string) => {
-    const { error } = await supabase.from('expenses').delete().eq('id', id);
+  const handleEditExpense = async (expenseData: Omit<Expense, 'id' | 'createdat' | 'householdid'>) => {
+    if (!editingExpense || !householdId) return;
+    const { error } = await supabase.from('expenses').update({
+      amount: expenseData.amount,
+      currency: expenseData.currency,
+      category: expenseData.category,
+      spender: expenseData.spender,
+      description: expenseData.description,
+      date: expenseData.date
+    }).eq('id', editingExpense.id);
+
+    if (error) alert('Failed to update expense.');
+    else await fetchExpenses();
+  }
+
+  const handleDeleteExpense = async () => {
+    if (!deletingId) return;
+    const { error } = await supabase.from('expenses').delete().eq('id', deletingId);
     if (error) alert('Failed to delete expense.');
+    else await fetchExpenses();
+    setDeletingId(null); // Close confirmation modal
   };
 
   const handleUpdateSettings = async (settings: HouseholdSettings) => {
@@ -827,23 +945,19 @@ const ExpenseTracker = () => {
         user2name: settings.user2name
     }, { onConflict: 'householdid' });
     if (error) alert('Failed to update settings.');
+    else await fetchHouseholdSettings();
   };
 
   const handleUpdateBudget = async (category: Category, limitIDR: number, limitAUD: number) => {
     if (!householdId) return;
-    
-    // Using UPSERT directly thanks to UNIQUE(householdId, category) constraint
     const { error } = await supabase.from('budgets').upsert({
-        householdid: householdId, // Lowercase
+        householdid: householdId,
         category,
-        limitidr: limitIDR, // Lowercase column name
-        limitaud: limitAUD  // Lowercase column name
+        limitidr: limitIDR,
+        limitaud: limitAUD
     }, { onConflict: 'householdid, category' });
-
-    if (error) {
-        console.error('Error upserting budget', error);
-        alert('Failed to save budget.');
-    }
+    if (error) alert('Failed to save budget.');
+    else await fetchBudgets();
   };
 
   const handleAddRecurringBill = async (bill: Omit<RecurringBill, 'id' | 'householdid'>) => {
@@ -853,11 +967,13 @@ const ExpenseTracker = () => {
         householdid: householdId 
     });
     if (error) alert('Failed to add recurring bill.');
+    else await fetchRecurringBills();
   };
 
   const handleDeleteRecurringBill = async (id: string) => {
     const { error } = await supabase.from('recurring_bills').delete().eq('id', id);
     if (error) alert('Failed to delete recurring bill.');
+    else await fetchRecurringBills();
   };
 
   // Computed values
@@ -868,6 +984,25 @@ const ExpenseTracker = () => {
       return monthMatch && categoryMatch;
     });
   }, [expenses, selectedMonth, filterCategory]);
+
+  // Group Expenses by Date
+  const groupedExpenses = useMemo(() => {
+    const groups: Record<string, Expense[]> = {};
+    filteredExpenses.forEach(exp => {
+      if (!groups[exp.date]) groups[exp.date] = [];
+      groups[exp.date].push(exp);
+    });
+
+    // Sort dates descending
+    return Object.entries(groups)
+      .sort(([dateA], [dateB]) => new Date(dateB).getTime() - new Date(dateA).getTime())
+      .map(([date, items]) => {
+        // Calculate totals for this specific date
+        const totalIDR = items.filter(i => i.currency === 'IDR').reduce((sum, i) => sum + i.amount, 0);
+        const totalAUD = items.filter(i => i.currency === 'AUD').reduce((sum, i) => sum + i.amount, 0);
+        return { date, items, totalIDR, totalAUD };
+      });
+  }, [filteredExpenses]);
 
   const totalsByCategory = useMemo(() => {
     const totals: Record<Category, { IDR: number; AUD: number }> = {
@@ -910,9 +1045,9 @@ const ExpenseTracker = () => {
     setSelectedMonth(date.toISOString().slice(0, 7));
   };
 
-  const getBudgetForCategory = (cat: Category) => {
-    return budgets.find(b => b.category === cat);
-  };
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   if (!isAuthenticated) {
     return <LoginScreen onJoin={handleJoinHousehold} />;
@@ -1037,9 +1172,8 @@ const ExpenseTracker = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Category Breakdown</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {(['Food', 'Entertainment', 'Needs', 'Transport', 'Uncategorized'] as Category[]).map((cat) => {
-                const budget = getBudgetForCategory(cat);
+                const budget = budgets.find(b => b.category === cat);
                 const spent = totalsByCategory[cat];
-                // using limitidr/limitaud lowercase property names
                 const percentIDR = budget && budget.limitidr > 0 ? (spent.IDR / budget.limitidr) * 100 : 0;
                 const percentAUD = budget && budget.limitaud > 0 ? (spent.AUD / budget.limitaud) * 100 : 0;
 
@@ -1134,48 +1268,67 @@ const ExpenseTracker = () => {
             {/* Mobile View: Cards (Visible on block, hidden on md) */}
             <div className="block md:hidden space-y-4">
                <AnimatePresence>
-                 {filteredExpenses.length === 0 ? (
+                 {groupedExpenses.length === 0 ? (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8 text-gray-400 bg-white rounded-xl shadow-sm">
                       No expenses found
                     </motion.div>
                   ) : (
-                    filteredExpenses.map((expense) => (
-                      <motion.div 
-                        key={expense.id} 
-                        variants={listVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        layout
-                        className="bg-white p-4 rounded-xl shadow-sm border border-gray-100"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <div className="font-semibold text-gray-800">{expense.description || 'No Description'}</div>
-                            <div className="text-xs text-gray-500">{new Date(expense.date).toLocaleDateString()}</div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-bold text-gray-800">{formatCurrency(expense.amount, expense.currency)}</div>
-                            <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
-                              {expense.category}
-                            </span>
-                          </div>
+                    groupedExpenses.map((group) => (
+                      <div key={group.date}>
+                        {/* Date Subheader */}
+                        <div className="flex justify-between items-center bg-gray-100 px-4 py-2 rounded-lg mb-2 text-sm font-semibold text-gray-600">
+                          <span>{formatDateFriendly(group.date)}</span>
+                          <span className="flex gap-2">
+                             {group.totalIDR > 0 && <span>{formatCurrency(group.totalIDR, 'IDR')}</span>}
+                             {group.totalAUD > 0 && <span>{formatCurrency(group.totalAUD, 'AUD')}</span>}
+                          </span>
                         </div>
-                        <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-50">
-                          <div className="text-sm text-gray-600 flex items-center gap-1">
-                            <Users className="w-3 h-3" />
-                            {expense.spender === 'User 1' ? householdSettings.user1name : 
-                             expense.spender === 'User 2' ? householdSettings.user2name : 
-                             'Together'}
-                          </div>
-                          <button
-                            onClick={() => handleDeleteExpense(expense.id)}
-                            className="text-red-500 hover:text-red-700 p-1"
+                        {group.items.map((expense) => (
+                          <motion.div 
+                            key={expense.id} 
+                            variants={listVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            layout
+                            className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3"
                           >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </motion.div>
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <div className="font-semibold text-gray-800">{expense.description || 'No Description'}</div>
+                                <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
+                                  {expense.category}
+                                </span>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-bold text-gray-800">{formatCurrency(expense.amount, expense.currency)}</div>
+                              </div>
+                            </div>
+                            <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-50">
+                              <div className="text-sm text-gray-600 flex items-center gap-1">
+                                <Users className="w-3 h-3" />
+                                {expense.spender === 'User 1' ? householdSettings.user1name : 
+                                 expense.spender === 'User 2' ? householdSettings.user2name : 
+                                 'Together'}
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => setEditingExpense(expense)}
+                                  className="text-blue-500 hover:text-blue-700 p-1"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => setDeletingId(expense.id)}
+                                  className="text-red-500 hover:text-red-700 p-1"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
                     ))
                   )}
                </AnimatePresence>
@@ -1197,50 +1350,77 @@ const ExpenseTracker = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     <AnimatePresence mode="popLayout">
-                    {filteredExpenses.length === 0 ? (
+                    {groupedExpenses.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
                           No expenses found for this period
                         </td>
                       </tr>
                     ) : (
-                      filteredExpenses.map((expense) => (
-                        <motion.tr 
-                          key={expense.id}
-                          layout
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="hover:bg-gray-50 transition-colors"
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {new Date(expense.date).toLocaleDateString()}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-800">
-                            {expense.description || '-'}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
-                              {expense.category}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {expense.spender === 'User 1' ? householdSettings.user1name : 
-                             expense.spender === 'User 2' ? householdSettings.user2name : 
-                             'Together'}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-right text-gray-800">
-                            {formatCurrency(expense.amount, expense.currency)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                            <button
-                              onClick={() => handleDeleteExpense(expense.id)}
-                              className="text-red-500 hover:text-red-700 transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </td>
-                        </motion.tr>
+                      groupedExpenses.map((group) => (
+                        <React.Fragment key={group.date}>
+                           {/* Date Subheader Row */}
+                           <tr className="bg-gray-100">
+                             <td colSpan={6} className="px-6 py-2 text-sm font-bold text-gray-700">
+                               <div className="flex justify-between">
+                                  <span>{formatDateFriendly(group.date)}</span>
+                                  <div className="flex gap-4">
+                                     {group.totalIDR > 0 && <span className="text-gray-600">Total: {formatCurrency(group.totalIDR, 'IDR')}</span>}
+                                     {group.totalAUD > 0 && <span className="text-gray-600">Total: {formatCurrency(group.totalAUD, 'AUD')}</span>}
+                                  </div>
+                               </div>
+                             </td>
+                           </tr>
+                           {/* Expense Rows */}
+                           {group.items.map((expense) => (
+                              <motion.tr 
+                                key={expense.id}
+                                layout
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="hover:bg-gray-50 transition-colors"
+                              >
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                  {new Date(expense.date).toLocaleDateString()}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-800">
+                                  {expense.description || '-'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                  <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
+                                    {expense.category}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                  {expense.spender === 'User 1' ? householdSettings.user1name : 
+                                   expense.spender === 'User 2' ? householdSettings.user2name : 
+                                   'Together'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-right text-gray-800">
+                                  {formatCurrency(expense.amount, expense.currency)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                  <div className="flex justify-end gap-2">
+                                    <button
+                                      onClick={() => setEditingExpense(expense)}
+                                      className="text-blue-500 hover:text-blue-700 transition-colors"
+                                      title="Edit"
+                                    >
+                                      <Edit2 className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={() => setDeletingId(expense.id)}
+                                      className="text-red-500 hover:text-red-700 transition-colors"
+                                      title="Delete"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                </td>
+                              </motion.tr>
+                           ))}
+                        </React.Fragment>
                       ))
                     )}
                     </AnimatePresence>
@@ -1255,12 +1435,36 @@ const ExpenseTracker = () => {
 
       {/* Modals wrapped in AnimatePresence */}
       <AnimatePresence>
+        {/* Add Modal */}
         {showAddModal && (
           <AddExpenseModal
             key="add-modal"
             onClose={() => setShowAddModal(false)}
-            onAdd={handleAddExpense}
+            onSubmit={handleAddExpense}
             householdSettings={householdSettings}
+          />
+        )}
+
+        {/* Edit Modal (reuses AddExpenseModal) */}
+        {editingExpense && (
+          <AddExpenseModal
+            key="edit-modal"
+            onClose={() => setEditingExpense(null)}
+            onSubmit={handleEditExpense}
+            householdSettings={householdSettings}
+            initialData={editingExpense}
+          />
+        )}
+        
+        {/* Delete Confirmation Modal */}
+        {deletingId && (
+          <ConfirmModal
+            key="confirm-delete"
+            isOpen={!!deletingId}
+            onClose={() => setDeletingId(null)}
+            onConfirm={handleDeleteExpense}
+            title="Delete Expense"
+            message="Are you sure you want to delete this expense? This action cannot be undone."
           />
         )}
 
