@@ -94,7 +94,7 @@ export default function Portfolio(): ReactElement {
       <div className="max-w-7xl w-full h-full grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-4 md:h-[85vh]">
         
         {/* 1. Profile Box */}
-        <Card className="md:col-span-2 md:row-span-2 flex flex-col justify-between relative" onClick={() => setSelectedSection('about')}>
+        <Card className="md:col-span-2 md:row-span-2 flex flex-col justify-between relative overflow-y-auto" onClick={() => setSelectedSection('about')}>
           <div className="space-y-4">
             <div className="flex justify-between items-start">
                <div className={`h-20 w-20 rounded-full ${THEME.accent} flex items-center justify-center text-white shadow-lg text-2xl font-bold`}>

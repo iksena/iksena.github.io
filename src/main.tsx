@@ -6,7 +6,6 @@ import './index.css'
 import App from './App.tsx'
 import News from './pages/News.tsx'
 import Chat from './pages/Chat.tsx'
-import ExpenseTracker from './pages/ExpenseTracker.tsx'
 
 export function AnimatedRoutes() {
   const location = useLocation();
@@ -17,7 +16,6 @@ export function AnimatedRoutes() {
         <Route path="/" element={<App />} />
         <Route path="/news" element={<News />} />
         <Route path="/chat" element={<Chat />} />
-        <Route path="/expense" element={<ExpenseTracker />} />
       </Routes>
     </AnimatePresence>
   )
