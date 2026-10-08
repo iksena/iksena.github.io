@@ -2,25 +2,24 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   Award,
   Bell,
-  Briefcase,
   ChevronRight,
-  Code,
-  Cpu,
-  ExternalLink,
   FileDown,
   FileCheck,
-  GraduationCap,
   MapPin,
   Menu,
   MessageSquare,
 } from 'lucide-react';
-import { useEffect, useState, type ReactElement, type MouseEvent as ReactMouseEvent } from 'react';
+import { useEffect, useRef, useState, type ReactElement } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Link, useNavigate } from 'react-router-dom';
-import { Card } from './components/Card.tsx';
 import { GenericModal } from './components/GenericModal.tsx';
 import { ProjectDetail } from './components/ProjectDetail.tsx';
-import { SectionIcon } from './components/SectionIcon.tsx';
+import { EducationTile } from './components/tiles/EducationTile.tsx';
+import { ExperienceTile } from './components/tiles/ExperienceTile.tsx';
+import { HonoursTile } from './components/tiles/HonoursTile.tsx';
+import { ProfileTile } from './components/tiles/ProfileTile.tsx';
+import { ProjectsTile } from './components/tiles/ProjectsTile.tsx';
+import { SkillsTile } from './components/tiles/SkillsTile.tsx';
 import { DATA } from './lib/data.ts';
 import { THEME } from './lib/theme.ts';
 import type { Project, SectionKey } from './lib/types.ts';
@@ -30,6 +29,7 @@ export default function Portfolio(): ReactElement {
   const [selectedSection, setSelectedSection] = useState<SectionKey | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showPageMenu, setShowPageMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const redirectPath = sessionStorage.getItem('redirect');
@@ -46,181 +46,89 @@ export default function Portfolio(): ReactElement {
     document.body.style.overflow = selectedSection || selectedProject ? 'hidden' : 'unset';
   }, [selectedSection, selectedProject]);
 
-  const openProject = (project: Project, event: ReactMouseEvent<HTMLDivElement>): void => {
-    event.stopPropagation();
-    setSelectedProject(project);
-  };
+  useEffect(() => {
+    if (!selectedSection && !selectedProject) return undefined;
+    const closeOnEscape = (event: KeyboardEvent): void => {
+      if (event.key !== 'Escape') return;
+      if (selectedProject) setSelectedProject(null);
+      else setSelectedSection(null);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [selectedSection, selectedProject]);
+
+  useEffect(() => {
+    if (!showPageMenu) return undefined;
+    const closeOnOutsideClick = (event: PointerEvent): void => {
+      if (!menuRef.current?.contains(event.target as Node)) setShowPageMenu(false);
+    };
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+    return () => document.removeEventListener('pointerdown', closeOnOutsideClick);
+  }, [showPageMenu]);
 
   const closeModal = (): void => {
     setSelectedSection(null);
     setSelectedProject(null);
   };
 
-  const skillCategoryPreview = DATA.skills.categories[1];
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.32 }} className={`min-h-screen ${THEME.bg} p-4 md:p-8 font-sans flex items-center justify-center`}>
-      {/* Floating Pages Menu */}
-      <div className="fixed top-4 right-4 z-40">
-        <button
-          aria-label="Pages Menu"
-          onClick={() => setShowPageMenu(!showPageMenu)}
-          className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E8DCCA] text-[#4B3832] hover:bg-white hover:shadow-md transition-all font-semibold"
-        >
-          <Menu size={18} />
-        </button>
-        {showPageMenu && (
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-[#E8DCCA] overflow-hidden">
-            <Link
-              to="/news"
-              className="flex items-center gap-3 px-4 py-3 hover:bg-[#FFF8F0] transition-colors text-[#4B3832]"
-              onClick={() => setShowPageMenu(false)}
-            >
-              <Bell size={18} className="text-[#8A9A5B]" />
-              <span className="font-medium">News</span>
-            </Link>
-            <Link
-              to="/chat"
-              className="flex items-center gap-3 px-4 py-3 hover:bg-[#FFF8F0] transition-colors text-[#4B3832] border-t border-[#E8DCCA]"
-              onClick={() => setShowPageMenu(false)}
-            >
-              <MessageSquare size={18} className="text-[#8A9A5B]" />
-              <span className="font-medium">Chat</span>
-            </Link>
-          </div>
-        )}
-      </div>
-      
-      <div className="max-w-7xl w-full h-full grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-4 md:h-[85vh]">
-        
-        {/* 1. Profile Box */}
-        <Card className="md:col-span-2 md:row-span-2 flex flex-col justify-between relative overflow-y-auto" onClick={() => setSelectedSection('about')}>
-          <div className="space-y-4">
-            <div className="flex justify-between items-start">
-               <div className={`h-20 w-20 rounded-full ${THEME.accent} flex items-center justify-center text-white shadow-lg text-2xl font-bold`}>
-                 <motion.img
-                   src={DATA.profile.avatar}
-                   alt={DATA.profile.name}
-                   className="h-full w-full object-cover rounded-full"
-                   initial={{ scale: 0.8, opacity: 0 }}
-                   animate={{ scale: 1, opacity: 1 }}
-                   transition={{ duration: 0.5 }}
-                 />
-               </div>
-               <div className="flex gap-2 ml-5 items-center px-3 py-1 bg-white/60 rounded-full border border-[#E8DCCA]">
-                 <MapPin size={14} className="text-[#8A9A5B]" />
-                 <span className="text-xs text-[#6F4E37] font-bold uppercase tracking-wide">{DATA.profile.location}</span>
-               </div>
-            </div>
-            
-            <div>
-              <h1 className={`text-3xl md:text-4xl font-bold ${THEME.text} leading-tight`}>{DATA.profile.name}</h1>
-              <div className="flex flex-wrap gap-2 mt-2" data-testid="roles-list">
-                {DATA.profile.roles.map((role, index) => (
-                  <span key={role} className="text-sm font-semibold text-[#8A9A5B]">
-                    {role}
-                    {index < DATA.profile.roles.length - 1 && ' •'}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.32 }} className={`min-h-screen ${THEME.bg} bg-[radial-gradient(#E8DCCA_1px,transparent_1px)] [background-size:22px_22px] px-4 py-4 md:px-6 lg:px-8 font-sans`}>
+      <div className="mx-auto flex max-w-7xl flex-col gap-4">
+        <header className="flex items-center justify-between gap-4">
+          <p className="text-sm text-[#6F4E37]">
+            <span className="font-bold tracking-tight text-[#4B3832]">sena<span className="text-[#8A9A5B]">.</span>web<span className="text-[#8A9A5B]">.</span>id</span>
+            <span className="hidden sm:inline"> · {greeting}, thanks for stopping by</span>
+          </p>
 
-          <div className="mt-4">
-            <h3 className="text-xs font-bold uppercase text-[#4B3832]/50 tracking-widest mb-2">Objective</h3>
-            <ReactMarkdown className="text-[#6F4E37] text-md md:text-lg leading-relaxed line-clamp-3">
-              {DATA.profile.objective}
-            </ReactMarkdown>
-          </div>
-
-          <div className="mt-6 flex flex-wrap gap-2 justify-start items-center">
+          {/* Pages Menu */}
+          <div className="relative z-40" ref={menuRef}>
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); setSelectedSection('about'); }}
-              className="px-4 py-2 bg-white/70 rounded-lg text-sm font-semibold text-[#4B3832] hover:bg-white transition-colors border border-[#E8DCCA] shadow-sm"
+              aria-label="Pages Menu"
+              aria-expanded={showPageMenu}
+              onClick={() => setShowPageMenu(!showPageMenu)}
+              className="flex items-center gap-2 px-3 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E8DCCA] text-[#4B3832] hover:bg-white hover:shadow-md transition-all font-semibold"
             >
-              More Details & Socials →
+              <Menu size={18} />
             </button>
-            <a
-              href="/cv.pdf"
-              download
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#8A9A5B] hover:bg-[#7A8A4B] transition-colors shadow-sm border border-transparent"
-            >
-              <FileDown size={16} /> Download CV
-            </a>
-          </div>
-        </Card>
-
-        {/* 2. Projects List */}
-        <Card className="md:col-span-2 md:row-span-2 overflow-hidden group" onClick={() => setSelectedSection('projects')}>
-          <div className="flex justify-between items-center mb-1">
-            <SectionIcon icon={Code} />
-            <span className="text-xs uppercase tracking-widest text-[#8A9A5B] font-bold">View All</span>
-          </div>
-          <h3 className={`text-2xl font-bold ${THEME.text} mb-3`}>Selected Projects</h3>
-          <div className="space-y-3 overflow-y-auto max-h-[250px] pr-2 custom-scrollbar">
-            {DATA.projects.map((project) => (
-              <div 
-                key={project.id}
-                onClick={(e) => openProject(project, e)}
-                className="bg-white p-3 rounded-xl hover:shadow-md transition-all border border-transparent hover:border-[#D2B48C] cursor-pointer group/item flex gap-4 items-center"
-              >
-                <div className="h-16 w-16 shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                  <img src={project.images[0]} alt={project.title} className="h-full w-full object-cover" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center mb-1">
-                    <h4 className="font-bold text-[#4B3832] truncate">{project.title}</h4>
-                    <ExternalLink size={14} className="opacity-0 group-hover/item:opacity-100 text-[#8A9A5B]" />
-                  </div>
-                  <div className="text-sm text-[#888] line-clamp-1"><ReactMarkdown>{project.desc}</ReactMarkdown></div>
-                  <div className="flex gap-1 mt-2 flex-wrap">
-                     {project.stack.slice(0, 3).map(t => <span key={t} className="text-[10px] px-1.5 py-0.5 bg-[#F5F5DC] rounded text-[#6F4E37]">{t}</span>)}
-                  </div>
-                </div>
+            {showPageMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-[#E8DCCA] overflow-hidden">
+                <Link
+                  to="/news"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-[#FFF8F0] transition-colors text-[#4B3832]"
+                  onClick={() => setShowPageMenu(false)}
+                >
+                  <Bell size={18} className="text-[#8A9A5B]" />
+                  <span className="font-medium">News</span>
+                </Link>
+                <Link
+                  to="/chat"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-[#FFF8F0] transition-colors text-[#4B3832] border-t border-[#E8DCCA]"
+                  onClick={() => setShowPageMenu(false)}
+                >
+                  <MessageSquare size={18} className="text-[#8A9A5B]" />
+                  <span className="font-medium">Chat</span>
+                </Link>
               </div>
-            ))}
+            )}
           </div>
-        </Card>
+        </header>
 
-        {/* 3. Experience */}
-        <Card className="md:col-span-1 md:row-span-1" onClick={() => setSelectedSection('experience')}>
-          <SectionIcon icon={Briefcase} />
-          <h3 className={`text-xl font-bold ${THEME.text}`}>Experience</h3>
-          <p className="text-sm text-[#6F4E37] mt-2 font-semibold">{DATA.experience[0].role}</p>
-          <p className="text-xs text-[#8A9A5B]">{DATA.experience[0].company}</p>
-        </Card>
-
-        {/* 4. Education */}
-        <Card className="md:col-span-1 md:row-span-1" onClick={() => setSelectedSection('education')}>
-          <SectionIcon icon={GraduationCap} />
-          <h3 className={`text-xl font-bold ${THEME.text}`}>Education</h3>
-          <p className="text-sm text-[#6F4E37] mt-2 font-semibold">{DATA.education[0].degree}</p>
-          <p className="text-xs text-[#8A9A5B]">{DATA.education[0].school}</p>
-        </Card>
-
-        {/* 5. Skills */}
-        <Card className="md:col-span-1 md:row-span-1" onClick={() => setSelectedSection('skills')}>
-          <SectionIcon icon={Cpu} />
-          <h3 className={`text-xl font-bold ${THEME.text} mb-3`}>Tech Stack</h3>
-          <div className="flex flex-wrap gap-1">
-            {skillCategoryPreview?.items.slice(0, 3).map((skill) => (
-              <span key={skill} className="text-[10px] px-2 py-1 bg-[#E8DCCA] rounded-md text-[#4B3832]">
-                {skill}
-              </span>
-            ))}
-            <span className="text-[10px] px-2 py-1 text-[#888]">+ More</span>
-          </div>
-        </Card>
-
-        {/* 6. Awards */}
-        <Card className="md:col-span-1 md:row-span-1" onClick={() => setSelectedSection('awards')}>
-           <SectionIcon icon={Award} />
-           <h3 className={`text-xl font-bold ${THEME.text}`}>Honours</h3>
-           <p className="text-sm text-[#6F4E37] mt-2">LPDP Scholarship & Awards</p>
-        </Card>
-
+        {/*
+          Bento grid. On large screens the two hero tiles share the top two rows and the
+          four compact tiles sit on an auto-height row, so nothing gets clipped on short viewports.
+        */}
+        <main className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[1fr_1fr_auto] lg:min-h-[calc(100dvh-5.5rem)]">
+          <ProfileTile onOpen={() => setSelectedSection('about')} />
+          <ProjectsTile onOpen={() => setSelectedSection('projects')} onSelect={setSelectedProject} />
+          <ExperienceTile onOpen={() => setSelectedSection('experience')} />
+          <EducationTile onOpen={() => setSelectedSection('education')} />
+          <SkillsTile onOpen={() => setSelectedSection('skills')} />
+          <HonoursTile onOpen={() => setSelectedSection('awards')} />
+        </main>
       </div>
 
       {/* --- MODAL CONTROLLER --- */}

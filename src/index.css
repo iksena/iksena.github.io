@@ -47,3 +47,65 @@
     background-color: #8A9A5B; /* The "Sage" accent color */
   }
 }
+
+/* --- Bento tile effects --- */
+
+@property --spot-a {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+/* Soft sage glow that follows the cursor across a card */
+.spotlight {
+  background-image: radial-gradient(
+    circle 360px at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgb(138 154 91 / calc(var(--spot-a) * 0.14)),
+    transparent 70%
+  );
+  transition: --spot-a 0.35s ease;
+}
+.spotlight:hover {
+  --spot-a: 1;
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+.marquee {
+  animation: marquee 38s linear infinite;
+}
+
+@keyframes fill-progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+.progress-fill {
+  animation: fill-progress 5s linear forwards;
+}
+
+@keyframes wave {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(16deg); }
+  20%, 40% { transform: rotate(-8deg); }
+}
+
+@keyframes grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.grow-x {
+  transform-origin: left;
+  animation: grow-x 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee,
+  .grow-x {
+    animation: none;
+  }
+  .progress-fill {
+    animation: none;
+    width: 100%;
+  }
+}

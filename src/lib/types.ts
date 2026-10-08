@@ -15,6 +15,19 @@ export interface ProfileData {
   location: string;
   email: string;
   avatar: string;
+  clocks: ClockZone[];
+  highlights: Highlight[];
+}
+
+export interface ClockZone {
+  city: string;
+  timeZone: string;
+}
+
+export interface Highlight {
+  value: number;
+  suffix: string;
+  label: string;
 }
 
 export interface SocialLink {

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { Card } from './Card';
 
 describe('Card', () => {
@@ -36,6 +36,21 @@ describe('Card', () => {
     card?.click();
     
     expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('is keyboard accessible when clickable', () => {
+    const handleClick = vi.fn();
+    render(
+      <Card onClick={handleClick} label="Open section">
+        <div>Test</div>
+      </Card>
+    );
+
+    const card = screen.getByRole('button', { name: 'Open section' });
+    expect(card).toHaveAttribute('tabindex', '0');
+    fireEvent.keyDown(card, { key: 'Enter' });
+    fireEvent.keyDown(card, { key: ' ' });
+    expect(handleClick).toHaveBeenCalledTimes(2);
   });
 
   it('renders without onClick handler', () => {

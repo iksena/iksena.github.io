@@ -10,6 +10,14 @@ export const DATA: PortfolioData = {
     location: "Canberra🇦🇺 ↔️ Jakarta🇮🇩",
     email: "mail@sena.web.id",
     avatar: IMAGES.DP,
+    clocks: [
+      { city: "Canberra", timeZone: "Australia/Sydney" },
+      { city: "Jakarta", timeZone: "Asia/Jakarta" },
+    ],
+    highlights: [
+      { value: 5, suffix: "+", label: "Years building" },
+      { value: 5, suffix: "M+", label: "Users served" },
+    ],
   },
   socials: [
     { id: 'em', platform: "Email", link: "mailto:mail@sena.web.id", icon: Mail },
