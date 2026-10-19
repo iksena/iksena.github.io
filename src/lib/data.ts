@@ -5,7 +5,7 @@ import type { PortfolioData } from './types.ts';
 export const DATA: PortfolioData = {
   profile: {
     name: "I Komang Sena Aji Buwana",
-    roles: ["Software Engineer", "Technical Lead", "Master of Computing Student"],
+    roles: ["Software Engineer", "Technical Lead", "Master of Computing Advanced Student"],
     objective: "Results-driven software engineer with 5+ years of experience building **full-stack fintech and digital products used by millions of users** in leading Indonesian banks and startups. Skilled in designing and delivering scalable, cloud-ready systems with modern JavaScript/TypeScript stacks, React/React Native, Node.js, GraphQL, and containerized microservices, complemented by strong DevOps exposure on Docker, Kubernetes, and OpenShift. Demonstrated leadership through **technical lead roles, Agile team enablement, and end-to-end ownership** of wealth management, payments, and investment features that improved user growth, automation, and code quality metrics. Entrepreneurial and product-minded, with experience co-founding an ed-tech startup, freelancing across banking, wellness, and ecommerce domains, and consistently winning national-level competitions and scholarships for innovation and impact. Currently pursuing a **Master of Computing at the Australian National University** with a focus on algorithms, machine learning, and AI-driven, cloud-native architectures, and eager to drive high-impact solutions at the intersection of **software engineering and intelligent systems.**",
     location: "Canberra🇦🇺 ↔️ Jakarta🇮🇩",
     email: "mail@sena.web.id",
@@ -54,7 +54,7 @@ export const DATA: PortfolioData = {
   education: [
     { 
       id: 1, 
-      degree: "Master of Computing", 
+      degree: "Master of Computing (Advanced)", 
       school: "Australian National University", 
       date: "Feb 2025 - Nov 2026 (Expected)",
       details: "GPA: 6.50 / 7.00. Coursework: Algorithms, Machine Learning, Structured Programming, Relational Databases, Logic, Discrete Mathematics, Computing Internships." 
@@ -270,9 +270,9 @@ export const DATA: PortfolioData = {
       category: "Updates",
       date: "17 February 2025",
       title: "Started studying at ANU",
-      description: `I started studying at ANU as a Master of Computing student. My study is fully funded by LPDP Scholarship. I will focus my coursework on AI/ML and cloud-native architecture.`,
-      ctaLink: "https://programsandcourses.anu.edu.au/2026/program/7706XMCOMP",
-      ctaText: "Master of Computing",
+      description: `I started studying at ANU as a Master of Computing (Advanced) student. My study is fully funded by LPDP Scholarship. I will focus my coursework on AI/ML and cloud-native architecture.`,
+      ctaLink: "https://programsandcourses.anu.edu.au/2027/program/7722XVCOMP",
+      ctaText: "Master of Computing (Advanced)",
     }
   ]
 };
